@@ -264,21 +264,84 @@ body{
   flex-shrink:0;
   background:var(--surface);
 }
+/* ── Recording bar (WhatsApp style) ── */
 .rec-bar{
-  max-width:680px;margin:0 auto 8px;
-  display:none;align-items:center;gap:8px;
-  padding:7px 14px;background:#FCEAE8;
-  border:1px solid #F5C4BF;border-radius:20px;
-  font-size:12px;color:#C04030;font-family:var(--fb);
+  display:none;
+  align-items:center;gap:10px;
+  padding:8px 8px 8px 12px;
+  background:var(--surface);
+  border:1.5px solid #F5C4BF;
+  border-radius:var(--r-xl);
+  max-width:680px;margin:0 auto;
 }
 .rec-bar.show{display:flex;}
-.rec-dot{width:8px;height:8px;border-radius:50%;background:#D04B3C;animation:pulse 1s ease infinite;flex-shrink:0;}
-.rec-timer{font-weight:500;min-width:32px;}
-.rec-stop{
-  margin-left:auto;padding:5px 12px;border-radius:10px;
-  background:#D04B3C;color:#fff;border:none;
-  font-size:12px;cursor:pointer;font-family:var(--fb);
-  min-height:32px;-webkit-tap-highlight-color:transparent;
+
+/* trash button */
+.rec-trash{
+  width:40px;height:40px;border-radius:var(--r-md);
+  border:none;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:#D04B3C;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.rec-trash svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;}
+.rec-trash:active{background:#FCEAE8;}
+
+/* waveform + timer */
+.rec-wave-wrap{
+  flex:1;display:flex;align-items:center;gap:8px;min-width:0;
+}
+.rec-dot-pulse{
+  width:9px;height:9px;border-radius:50%;
+  background:#D04B3C;flex-shrink:0;
+  animation:pulse 1s ease infinite;
+}
+.rec-wave{
+  flex:1;height:28px;display:flex;align-items:center;
+  gap:2px;overflow:hidden;
+}
+.rec-wave-bar{
+  width:3px;border-radius:2px;
+  background:var(--brand-soft);
+  animation:waveAnim 0.8s ease infinite;
+  flex-shrink:0;
+}
+.rec-wave-bar:nth-child(2){animation-delay:.1s;}
+.rec-wave-bar:nth-child(3){animation-delay:.2s;}
+.rec-wave-bar:nth-child(4){animation-delay:.3s;}
+.rec-wave-bar:nth-child(5){animation-delay:.15s;}
+.rec-wave-bar:nth-child(6){animation-delay:.05s;}
+.rec-wave-bar:nth-child(7){animation-delay:.25s;}
+.rec-wave-bar:nth-child(8){animation-delay:.35s;}
+.rec-wave-bar:nth-child(9){animation-delay:.1s;}
+.rec-wave-bar:nth-child(10){animation-delay:.2s;}
+.rec-timer{font-size:13px;font-weight:500;color:var(--text-2);flex-shrink:0;min-width:34px;}
+
+/* send audio button */
+.rec-send{
+  width:40px;height:40px;border-radius:50%;
+  border:none;background:var(--user-bg);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;box-shadow:var(--sh-sm);
+  -webkit-tap-highlight-color:transparent;
+  transition:background .14s,transform .1s;
+}
+.rec-send svg{width:16px;height:16px;fill:#fff;}
+.rec-send:active{background:var(--user-bg-hover);transform:scale(.95);}
+
+/* mic button pulse while recording */
+.audio-btn.recording{
+  background:#D04B3C !important;
+  border-color:#D04B3C !important;
+  animation:pulse 1s ease infinite;
+}
+.audio-btn.recording svg{stroke:#fff !important;}
+
+.in-wrap{position:relative;}
+
+@keyframes waveAnim{
+  0%,100%{height:6px;}
+  50%{height:20px;}
 }
 .in-box{
   max-width:680px;margin:0 auto;
@@ -383,59 +446,62 @@ textarea.fi{resize:vertical;line-height:1.7;}
 .gem-desc a{color:var(--brand);}
 
 /* ── Category Tabs ── */
+/* Category pill buttons — all visible, no icons, wrap freely */
 .cat-tabs{
-  display:flex;gap:2px;
-  /* horizontal scroll on mobile so tabs don't wrap awkwardly */
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-  padding:10px 12px 0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  padding:14px 14px 12px;
   border-bottom:1px solid var(--border);
   background:var(--surface2);
-  scrollbar-width:none;
 }
-.cat-tabs::-webkit-scrollbar{display:none;}
 
 .cat-tab{
-  padding:8px 12px;
-  border-radius:var(--r-md) var(--r-md) 0 0;
+  padding:7px 14px;
+  border-radius:20px;
   font-size:13px;font-family:var(--fb);font-weight:400;
   color:var(--text-2);cursor:pointer;
-  border:1px solid transparent;border-bottom:none;
-  background:transparent;
+  border:1.5px solid var(--border2);
+  background:var(--surface);
+  white-space:nowrap;
+  min-height:36px;
   display:flex;align-items:center;gap:5px;
-  position:relative;bottom:-1px;
-  white-space:nowrap; /* keep tab text on one line */
-  flex-shrink:0;
-  min-height:40px;
   -webkit-tap-highlight-color:transparent;
-  transition:background .14s,color .14s;
+  transition:all .14s;
 }
-.cat-tab:active{background:var(--surface);}
+.cat-tab:active{background:var(--brand-pale);border-color:var(--brand-soft);color:var(--brand);}
 .cat-tab.active{
-  background:var(--surface);color:var(--brand);font-weight:500;
-  border-color:var(--border);border-bottom-color:var(--surface);
+  background:var(--brand);color:#fff;
+  border-color:var(--brand);font-weight:500;
 }
-.cat-tab .cat-dot{width:6px;height:6px;border-radius:50%;background:var(--brand-soft);flex-shrink:0;display:none;}
+.cat-tab .cat-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,0.7);
+  flex-shrink:0;display:none;
+}
 .cat-tab.has-data .cat-dot{display:block;}
-.cat-tab .cat-ico{font-size:14px;}
+.cat-pill-ico{display:flex;align-items:center;flex-shrink:0;opacity:.8;}
+.cat-tab.active .cat-pill-ico{opacity:1;}
+.cat-tab.active .cat-pill-ico svg{stroke:#fff;}
 
 .cat-add-btn{
-  padding:6px 10px;
-  border-radius:var(--r-md) var(--r-md) 0 0;
+  padding:7px 14px;
+  border-radius:20px;
   font-size:13px;font-family:var(--fb);
-  color:var(--text-3);cursor:pointer;
-  border:1px dashed var(--border);border-bottom:none;
-  background:transparent;
-  position:relative;bottom:-1px;
-  display:flex;align-items:center;gap:4px;
-  flex-shrink:0;white-space:nowrap;min-height:40px;
+  color:var(--brand);cursor:pointer;
+  border:1.5px dashed var(--brand-soft);
+  background:var(--brand-pale);
+  display:flex;align-items:center;gap:5px;
+  white-space:nowrap;min-height:36px;
   -webkit-tap-highlight-color:transparent;
+  transition:all .14s;
 }
-.cat-add-btn:active{background:var(--brand-pale);color:var(--brand);}
+.cat-add-btn:active{background:var(--brand);color:#fff;border-color:var(--brand);}
 
 .cat-body{padding:14px 14px 10px;}
 .cat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;}
-.cat-name-display{font-size:13px;font-weight:500;color:var(--text-1);display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
+.cat-name-display{font-size:13px;font-weight:500;color:var(--text-1);display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+.cat-hd-ico{display:flex;align-items:center;color:var(--brand);flex-shrink:0;}
 .cat-edit-btn{
   padding:6px 12px;border-radius:8px;font-size:12px;
   font-family:var(--fb);color:var(--brand);cursor:pointer;
@@ -480,13 +546,17 @@ textarea.fi{resize:vertical;line-height:1.7;}
 .modal-lbl:first-of-type{margin-top:0;}
 .ico-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
 .ico-opt{
-  width:42px;height:42px;border-radius:10px; /* larger on mobile */
+  width:44px;height:44px;border-radius:10px;
   border:1.5px solid var(--border);background:var(--bg);
-  font-size:18px;cursor:pointer;
+  cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   -webkit-tap-highlight-color:transparent;
+  transition:all .14s;
+  color:var(--text-2);
 }
-.ico-opt:active,.ico-opt.sel{background:var(--brand-pale);border-color:var(--brand-soft);}
+.ico-opt:active{background:var(--brand-pale);border-color:var(--brand-soft);color:var(--brand);}
+.ico-opt.sel{background:var(--brand);border-color:var(--brand);color:#fff;}
+.ico-opt.sel svg{stroke:#fff;}
 .modal-acts{display:flex;gap:8px;margin-top:18px;}
 .modal-cancel{
   flex:1;padding:13px;border-radius:var(--r-md);
@@ -591,7 +661,7 @@ textarea.fi{resize:vertical;line-height:1.7;}
   .nc-btn:hover{background:var(--brand-pale);border-color:var(--brand-soft);color:var(--brand);}
   .send-btn:hover{background:var(--user-bg-hover);transform:scale(1.05);}
   .audio-btn:hover{background:var(--gold-pale);border-color:var(--gold-dim);}
-  .cat-tab:hover{background:var(--surface);color:var(--text-1);}
+  .cat-tab:hover:not(.active){background:var(--brand-pale);border-color:var(--brand-soft);color:var(--brand);}
   .cat-del-btn:hover{background:#FCEAE8;color:#C04030;border-color:#F5C4BF;}
   .modal-ov{align-items:center;padding:20px;}
   .modal{border-radius:var(--r-xl);}
@@ -633,6 +703,64 @@ textarea.fi{resize:vertical;line-height:1.7;}
 .prov-info-card a{color:var(--brand);}
 .prov-info-card strong{font-weight:500;color:var(--text-1);}
 
+/* ── Icon picker ── */
+.ico-tabs{display:flex;gap:0;margin-bottom:10px;border:1.5px solid var(--border);border-radius:var(--r-md);overflow:hidden;}
+.ico-tab{
+  flex:1;padding:8px;font-size:13px;font-family:var(--fb);
+  border:none;background:transparent;cursor:pointer;color:var(--text-2);
+  transition:all .14s;-webkit-tap-highlight-color:transparent;
+}
+.ico-tab.active{background:var(--brand);color:#fff;font-weight:500;}
+.ico-tab:not(.active):active{background:var(--surface2);}
+
+.ico-panel{}
+.ico-grid{display:flex;flex-wrap:wrap;gap:6px;max-height:190px;overflow-y:auto;padding:2px;}
+.ico-grid::-webkit-scrollbar{width:3px;}
+.ico-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+.ico-online-search{display:flex;gap:6px;margin-bottom:10px;}
+.ico-online-search .fi{flex:1;font-size:14px;}
+.ico-search-btn{
+  width:44px;height:44px;flex-shrink:0;
+  background:var(--brand);border:none;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#fff;-webkit-tap-highlight-color:transparent;
+}
+.ico-search-btn:active{background:var(--brand-hover);}
+
+.ico-suggestions{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-bottom:10px;}
+.ico-sug-lbl{font-size:11px;color:var(--text-3);}
+.ico-suggestions button{
+  padding:3px 9px;border-radius:12px;font-size:12px;
+  border:1px solid var(--border2);background:var(--surface2);
+  cursor:pointer;color:var(--text-2);font-family:var(--fb);
+  -webkit-tap-highlight-color:transparent;
+}
+.ico-suggestions button:active{background:var(--brand-pale);color:var(--brand);border-color:var(--brand-soft);}
+
+.ico-search-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:20px 0;color:var(--text-3);font-size:12px;text-align:center;
+}
+
+.ico-grid-online{display:flex;flex-wrap:wrap;gap:6px;max-height:190px;overflow-y:auto;padding:2px;}
+.ico-grid-online::-webkit-scrollbar{width:3px;}
+.ico-grid-online::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.ico-online-hint{font-size:11px;color:var(--text-3);margin-top:4px;text-align:center;}
+
+/* img-based icon buttons (online results) */
+.ico-opt-img{
+  width:44px;height:44px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--bg);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;transition:all .14s;
+  overflow:hidden;
+}
+.ico-opt-img img{width:22px;height:22px;object-fit:contain;opacity:.75;}
+.ico-opt-img:active{border-color:var(--brand-soft);background:var(--brand-pale);}
+.ico-opt-img.sel{border-color:var(--brand);background:var(--brand-pale);}
+.ico-opt-img.sel img{opacity:1;filter:none;}
+
 </style>
 </head>
 <body>
@@ -647,7 +775,49 @@ textarea.fi{resize:vertical;line-height:1.7;}
     <label class="modal-lbl">Nome da categoria</label>
     <input class="fi" id="newCatName" placeholder="Ex: Grupos de oração, Dízimo..."/>
     <label class="modal-lbl">Ícone</label>
-    <div class="ico-grid" id="icoGrid"></div>
+
+    <!-- Tab bar: Meus ícones | Buscar online -->
+    <div class="ico-tabs">
+      <button class="ico-tab active" id="icoTabLocal"  onclick="showIcoTab('local')">Meus ícones</button>
+      <button class="ico-tab"        id="icoTabOnline" onclick="showIcoTab('online')">Buscar online</button>
+    </div>
+
+    <!-- LOCAL panel -->
+    <div class="ico-panel" id="icoPanelLocal">
+      <div class="ico-grid" id="icoGrid"></div>
+    </div>
+
+    <!-- ONLINE panel -->
+    <div class="ico-panel" id="icoPanelOnline" style="display:none;">
+      <div class="ico-online-search">
+        <input class="fi" type="search" id="icoSearch"
+          placeholder="Digite em inglês: church, heart, star, book..."
+          autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <button class="ico-search-btn" onclick="doIconSearch()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+      </div>
+      <!-- Quick suggestions -->
+      <div class="ico-suggestions" id="icoSuggestions">
+        <span class="ico-sug-lbl">Sugestões:</span>
+        <button onclick="quickSearch('church')">church</button>
+        <button onclick="quickSearch('cross')">cross</button>
+        <button onclick="quickSearch('heart')">heart</button>
+        <button onclick="quickSearch('book')">book</button>
+        <button onclick="quickSearch('music')">music</button>
+        <button onclick="quickSearch('star')">star</button>
+        <button onclick="quickSearch('bell')">bell</button>
+        <button onclick="quickSearch('people')">people</button>
+        <button onclick="quickSearch('candle')">candle</button>
+        <button onclick="quickSearch('pray')">pray</button>
+      </div>
+      <div class="ico-search-state" id="icoSearchState">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span>Busque ícones da biblioteca Iconify</span>
+      </div>
+      <div class="ico-grid ico-grid-online" id="icoGridOnline" style="display:none;"></div>
+      <div class="ico-online-hint" id="icoOnlineHint" style="display:none;"></div>
+    </div>
     <div class="modal-acts">
       <button class="modal-cancel" onclick="closeModal()">Cancelar</button>
       <button class="modal-ok" id="modalOkBtn" onclick="confirmCatModal()">Criar categoria</button>
@@ -732,19 +902,34 @@ textarea.fi{resize:vertical;line-height:1.7;}
       </div>
 
       <div class="in-wrap">
-        <!-- recording bar -->
+        <!-- WhatsApp recording bar: replaces input while recording -->
         <div class="rec-bar" id="recBar">
-          <div class="rec-dot"></div>
-          <span>Gravando áudio</span>
-          <span class="rec-timer" id="recTimer">0:00</span>
-          <button class="rec-stop" onclick="stopRec()">Enviar</button>
+          <button class="rec-trash" id="recTrash" onclick="cancelRec()" title="Cancelar">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          </button>
+          <div class="rec-wave-wrap">
+            <div class="rec-dot-pulse"></div>
+            <div class="rec-wave">
+              <div class="rec-wave-bar"></div><div class="rec-wave-bar"></div>
+              <div class="rec-wave-bar"></div><div class="rec-wave-bar"></div>
+              <div class="rec-wave-bar"></div><div class="rec-wave-bar"></div>
+              <div class="rec-wave-bar"></div><div class="rec-wave-bar"></div>
+              <div class="rec-wave-bar"></div><div class="rec-wave-bar"></div>
+            </div>
+            <span class="rec-timer" id="recTimer">0:00</span>
+          </div>
+          <button class="rec-send" id="recSend" onclick="finishRec()" title="Enviar áudio">
+            <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          </button>
         </div>
-        <div class="in-box">
-          <textarea id="chatInput" placeholder="Faça uma pergunta ou grave um áudio..." rows="1"
+
+        <div class="in-box" id="inBox">
+          <textarea id="chatInput" placeholder="Mensagem... (segure 🎤 para gravar)" rows="1"
             onkeydown="onKey(event)" oninput="rsz(this)"></textarea>
           <div class="in-foot">
             <span class="in-hint">Enter para enviar · Shift+Enter nova linha</span>
-            <button class="icon-btn audio-btn" id="audioBtn" onclick="toggleRec()" title="Gravar áudio">
+            <button class="icon-btn audio-btn" id="audioBtn"
+              title="Segure para gravar">
               <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
             </button>
             <button class="icon-btn send-btn" id="sendBtn" onclick="sendMsg()">
@@ -903,17 +1088,60 @@ let currentProvider = 'gemini';
 
 // Default categories
 const DEFAULT_CATS = [
-  {id:'missas',    name:'Missas',     ico:'🕊', text:''},
-  {id:'confissoes',name:'Confissões', ico:'🙏', text:''},
-  {id:'batizados', name:'Batizados',  ico:'💧', text:''},
-  {id:'casamentos',name:'Casamentos', ico:'💍', text:''},
-  {id:'secretaria',name:'Secretaria', ico:'📞', text:''},
-  {id:'avisos',    name:'Avisos',     ico:'📋', text:''},
+  {id:'missas',       name:'Missas',          ico:'sun',          text:''},
+  {id:'confissoes',   name:'Confissões',       ico:'heart-handshake', text:''},
+  {id:'batizados',    name:'Batizados',        ico:'droplets',     text:''},
+  {id:'casamentos',   name:'Casamentos',       ico:'rings',        text:''},
+  {id:'eucaristia',   name:'Eucaristia',       ico:'wheat',        text:''},
+  {id:'catecismo',    name:'Catecismo',        ico:'book-open',    text:''},
+  {id:'liturgia',     name:'Liturgia',         ico:'scroll-text',  text:''},
+  {id:'grupooracao',  name:'Grupo de Oração',  ico:'users',        text:''},
+  {id:'dizimo',       name:'Dízimo',           ico:'hand-coins',   text:''},
+  {id:'endereco',     name:'Endereço',         ico:'map-pin',      text:''},
+  {id:'secretaria',   name:'Secretaria',       ico:'phone',        text:''},
+  {id:'avisos',       name:'Avisos',           ico:'megaphone',    text:''},
 ];
 let cats = [];
 let activeCat = 0;
 
-const ICO_OPTS = ['🕊','🙏','💧','💍','📞','📋','✝','⛪','🎶','🕯','📖','🌿','🎗','🔔','👥','💛','🌸','📿'];
+// Icon library: id -> SVG path string (Lucide 24x24, stroke-based)
+const ICONS = {
+  'sun':            '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>',
+  'moon':           '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  'flame':          '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  'cross':          '<path d="M11 2a1 1 0 0 1 2 0v8h8a1 1 0 0 1 0 2h-8v8a1 1 0 0 1-2 0v-8H3a1 1 0 0 1 0-2h8V2z"/>',
+  'church':         '<path d="M10 9h4"/><path d="M12 7v5"/><path d="M14 22v-4a2 2 0 0 0-4 0v4"/><path d="M18 22V5.618a1 1 0 0 0-.553-.894l-4.553-2.277a2 2 0 0 0-1.788 0L6.553 4.724A1 1 0 0 0 6 5.618V22"/><path d="m18 7 3.447 1.724a1 1 0 0 1 .553.894V22"/><path d="M2.553 9.618 6 7.618"/><path d="M2 22h20"/>',
+  'scroll-text':    '<path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M15 8h-5"/><path d="M15 12h-5"/>',
+  'wheat':          '<path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4z"/><path d="M11.47 17.47 13 19l-1.53 1.53a3.5 3.5 0 0 1-4.94 0L5 19l1.53-1.53a3.5 3.5 0 0 1 4.94 0z"/>',
+  'star':           '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  'droplets':       '<path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/>',
+  'heart-handshake':'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08v0c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/>',
+  'rings':          '<path d="M6 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M18 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M8.37 8.37C9.01 10.46 10.89 12 13.13 12H14"/><path d="M10 16c0 2.21 1.79 4 4 4s4-1.79 4-4-1.79-4-4-4-4 1.79-4 4z"/>',
+  'book-open':      '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  'users':          '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  'baby':           '<path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/>',
+  'phone':          '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.4a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.7h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  'mail':           '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+  'map-pin':        '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+  'megaphone':      '<path d="m3 11 19-9-9 19-2-8-8-2z"/>',
+  'calendar':       '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  'clock':          '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  'clipboard-list': '<rect x="9" y="2" width="6" height="4" rx="1"/><path d="M8 6H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>',
+  'hand-coins':     '<path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/>',
+  'helping-hand':   '<path d="m3 15 5.12-5.12A3 3 0 0 1 10.24 9H13a2 2 0 1 1 0 4h-2.5m4-.68 4.17-4.89a1.88 1.88 0 0 1 2.92 2.36l-4.2 5.94A3 3 0 0 1 14.96 17H9.83a2 2 0 0 0-1.42.59L7 19"/><path d="m2 14 6 6"/>',
+  'shield':         '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  'music':          '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  'mic':            '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/>',
+  'home':           '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  'info':           '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+  'bell':           '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  'bookmark':       '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
+  'file-text':      '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
+  'globe':          '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  'building':       '<rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>'
+};
+
+const ICO_OPTS = Object.keys(ICONS);
 let selectedIco = ICO_OPTS[0];
 
 let mediaRec = null;
@@ -943,6 +1171,7 @@ window.onload = () => {
   cats = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_CATS));
   renderCats();
   buildIcoGrid();
+  initAudioBtn();
 };
 
 /* ════════════════════════════════════
@@ -1093,7 +1322,7 @@ function renderCats(){
   cats.forEach((c,i)=>{
     const btn = document.createElement('button');
     btn.className = 'cat-tab' + (i===activeCat?' active':'') + (c.text.trim()?' has-data':'');
-    btn.innerHTML = `<span class="cat-ico">${c.ico}</span>${c.name}<span class="cat-dot"></span>`;
+    btn.innerHTML = '<span class="cat-pill-ico">'+getIcon(c.ico,13)+'</span>' + c.name + '<span class="cat-dot"></span>';
     btn.onclick = ()=>{ saveCurrentCatText(); activeCat=i; renderCats(); };
     tabs.appendChild(btn);
   });
@@ -1106,19 +1335,25 @@ function renderCats(){
 
   const c = cats[activeCat];
   const placeholders = {
-    missas:'Ex:\n- Domingo: 8h00 e 18h00\n- Dias de semana: 7h00\n- Sábado: 19h00',
-    confissoes:'Ex:\n- Sexta-feira: 15h às 17h\n- Sábado: 16h às 18h',
-    batizados:'Ex:\n- Primeiro domingo do mês, às 10h\n- Inscrições com 1 mês de antecedência',
-    casamentos:'Ex:\n- Agendar na secretaria com 6 meses de antecedência',
-    secretaria:'Ex:\n- Atendimento: seg a sex, 8h às 12h\n- Telefone: (85) 99999-9999',
-    avisos:'Escreva aqui os avisos desta semana...',
+    missas:      'Ex:\n- Domingo: 8h00 e 18h00\n- Dias de semana: 7h00\n- Sábado: 19h00',
+    confissoes:  'Ex:\n- Sexta-feira: 15h às 17h\n- Sábado: 16h às 18h',
+    batizados:   'Ex:\n- Primeiro domingo do mês, às 10h\n- Inscrições com 1 mês de antecedência',
+    casamentos:  'Ex:\n- Agendar na secretaria com 6 meses de antecedência\n- Documentação: RG, CPF, certidão de batismo',
+    eucaristia:  'Ex:\n- Primeira Comunhão: inscrições em março\n- Preparação: encontros às quartas, 18h',
+    catecismo:   'Ex:\n- Turmas: sábado 9h (crianças) e terça 19h (adultos)\n- Inscrições na secretaria',
+    liturgia:    'Ex:\n- Equipe de liturgia: ensaio sexta 19h\n- Contato: (00) 00000-0000',
+    grupooracao: 'Ex:\n- Grupo de oração: toda terça às 19h30\n- Local: salão paroquial',
+    dizimo: 'Ex:\n- Contribuição mensal voluntária\n- Depósito: Banco X, Ag. 0000, Conta 00000-0\n- PIX: pix@paroquia.com',
+    endereco:    'Ex:\n- Rua das Flores, 123 - Bairro - Cidade/UF\n- CEP: 00000-000\n- Como chegar: próximo ao Mercado Central',
+    secretaria:  'Ex:\n- Atendimento: seg a sex, 8h às 12h\n- Telefone: (85) 99999-9999\n- WhatsApp: 85999999999',
+    avisos:      'Escreva aqui os avisos desta semana...',
   };
   const ph = placeholders[c.id] || `Escreva aqui as informações sobre ${c.name}...`;
   const isDefault = DEFAULT_CATS.some(d=>d.id===c.id);
 
   body.innerHTML = `
     <div class="cat-header">
-      <div class="cat-name-display">${c.ico} ${c.name}</div>
+      <div class="cat-name-display"><span class="cat-hd-ico" id="catHdIco"></span>${c.name}</div>
       <div style="display:flex;gap:6px;">
         <button class="cat-edit-btn" onclick="openEditModal(${activeCat})">Editar</button>
         ${!isDefault ? `<button class="cat-del-btn" onclick="deleteCat(${activeCat})">Remover</button>` : ''}
@@ -1127,6 +1362,9 @@ function renderCats(){
     <div class="cat-placeholder">Informações sobre <strong>${c.name}</strong>:</div>
     <textarea class="fi" id="catTa" style="min-height:180px;" placeholder="${ph}"
       onfocus="scrollIntoViewIfMobile(this)">${c.text}</textarea>`;
+  // Inject SVG icon into header after innerHTML is set
+  var hdIco = document.getElementById('catHdIco');
+  if(hdIco) hdIco.innerHTML = getIcon(c.ico, 16);
 }
 
 function saveCurrentCatText(){
@@ -1144,21 +1382,128 @@ function deleteCat(i){
 /* ════════════════════════════════════
    MODAL
 ════════════════════════════════════ */
+/* ── Render icon as inline SVG from local map — no CDN needed ── */
+function getIcon(name, size){
+  size = size || 16;
+  var paths = ICONS[name] || '<circle cx="12" cy="12" r="8"/>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+paths+'</svg>';
+}
+
 function buildIcoGrid(){ buildIcoGridWith(ICO_OPTS[0]); }
 
-function buildIcoGridWith(preSelected){
-  const grid = $('icoGrid');
+function buildIcoGridWith(preSelected, subset){
+  var list = subset || ICO_OPTS;
+  var grid = $('icoGrid');
   grid.innerHTML = '';
-  selectedIco = preSelected || ICO_OPTS[0];
-  ICO_OPTS.forEach(ico=>{
-    const btn = document.createElement('button');
-    btn.className='ico-opt'+(ico===selectedIco?' sel':'');
-    btn.textContent=ico;
-    btn.type='button';
-    btn.onclick=()=>{ selectedIco=ico; document.querySelectorAll('.ico-opt').forEach(b=>b.classList.toggle('sel',b.textContent===ico)); };
+  selectedIco = preSelected || list[0];
+  list.forEach(function(ico){
+    var btn = document.createElement('button');
+    btn.className = 'ico-opt' + (ico===selectedIco?' sel':'');
+    btn.dataset.ico = ico;
+    btn.type = 'button';
+    btn.title = ico;
+    btn.innerHTML = getIcon(ico, 20);
+    btn.onclick = function(){
+      selectedIco = ico;
+      document.querySelectorAll('.ico-opt').forEach(function(b){ b.classList.toggle('sel', b.dataset.ico===ico); });
+    };
     grid.appendChild(btn);
   });
 }
+let icoSearchTimer = null;
+
+function showIcoTab(tab){
+  const isOnline = tab === 'online';
+  $('icoTabLocal').classList.toggle('active', !isOnline);
+  $('icoTabOnline').classList.toggle('active',  isOnline);
+  $('icoPanelLocal').style.display  = isOnline ? 'none' : '';
+  $('icoPanelOnline').style.display = isOnline ? ''     : 'none';
+}
+
+function quickSearch(term){
+  $('icoSearch').value = term;
+  doIconSearch();
+}
+
+async function doIconSearch(){
+  const query = ($('icoSearch').value || '').trim();
+  const state  = $('icoSearchState');
+  const grid   = $('icoGridOnline');
+  const hint   = $('icoOnlineHint');
+
+  if(!query){
+    if(state){ state.style.display='flex'; state.querySelector('span').textContent='Digite um termo e clique em buscar'; }
+    if(grid)  grid.style.display = 'none';
+    if(hint)  hint.style.display = 'none';
+    return;
+  }
+
+  // Show loading
+  if(state){ state.style.display='flex'; state.querySelector('span').textContent='Buscando "'+query+'"...'; }
+  if(grid)  { grid.style.display='none'; grid.innerHTML=''; }
+  if(hint)  hint.style.display='none';
+
+  try{
+    // Iconify search — returns JSON list of icon IDs
+    const url = 'https://api.iconify.design/search?query='+encodeURIComponent(query)
+              + '&limit=40&prefix=lucide,mdi,ph,tabler,material-symbols,heroicons';
+    const res  = await fetch(url);
+    if(!res.ok) throw new Error('status '+res.status);
+    const data = await res.json();
+
+    if(!data.icons || data.icons.length === 0){
+      if(state){ state.style.display='flex'; state.querySelector('span').textContent='Sem resultados para "'+query+'". Tente outro termo.'; }
+      return;
+    }
+
+    if(state) state.style.display='none';
+    if(grid)  grid.style.display='flex';
+    if(hint){ hint.style.display='block'; hint.textContent=data.icons.length+' ícones encontrados'; }
+
+    const icons = data.icons.slice(0,40);
+    icons.forEach(id => {
+      const btn = document.createElement('button');
+      btn.className = 'ico-opt-img' + (id===selectedIco?' sel':'');
+      btn.dataset.ico = id;
+      btn.type  = 'button';
+      btn.title = id.indexOf(':')>-1 ? id.split(':').pop() : id;
+
+      // Use Iconify as <img> src — works from file:// with no CORS issues
+      const parts = id.indexOf(':')>-1 ? id.split(':') : [id.split('-')[0], id];
+      // Use themed URL: dark color that matches our palette
+      const imgUrl = 'https://api.iconify.design/'+parts[0]+'/'+parts[1]+'.svg?color=%237B5E3A&width=22&height=22';
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      img.alt = btn.title;
+      img.onerror = function(){ btn.style.display='none'; }; // hide broken
+      btn.appendChild(img);
+
+      btn.onclick = function(){
+        selectedIco = id;
+        // Store themed SVG for reuse in pill buttons
+        fetch('https://api.iconify.design/'+parts[0]+'/'+parts[1]+'.svg?width=20&height=20')
+          .then(r=>r.text()).then(svg=>{
+            if(svg && svg.length>10){
+              const themed = svg.replace(/fill="(?!none)[^"]*"/g,'fill="currentColor"')
+                                .replace(/stroke="(?!none)[^"]*"/g,'stroke="currentColor"');
+              ICONS[id] = themed;
+            }
+          }).catch(()=>{});
+        document.querySelectorAll('.ico-opt-img,.ico-opt').forEach(b=>
+          b.classList.toggle('sel', b.dataset.ico===id)
+        );
+      };
+      grid.appendChild(btn);
+    });
+
+  }catch(err){
+    if(state){ state.style.display='flex'; state.querySelector('span').textContent='Sem conexão com a internet. Verifique e tente novamente.'; }
+  }
+}
+
+// Keep old name for backward compat
+function searchIcons(){ }
+
 let modalMode = 'new';  // 'new' | 'edit'
 let editCatIdx = -1;
 
@@ -1170,6 +1515,11 @@ function openModal(){
   $('modalOkBtn').textContent = 'Criar categoria';
   $('newCatName').value = '';
   buildIcoGrid();
+  showIcoTab('local');
+  if($('icoSearch'))       $('icoSearch').value = '';
+  if($('icoGridOnline'))   { $('icoGridOnline').innerHTML=''; $('icoGridOnline').style.display='none'; }
+  if($('icoOnlineHint'))   $('icoOnlineHint').style.display='none';
+  if($('icoSearchState'))  { $('icoSearchState').style.display='flex'; const sp=$('icoSearchState').querySelector('span'); if(sp) sp.textContent='Digite um termo e clique em buscar'; }
   $('modalOv').classList.add('show');
   setTimeout(()=>$('newCatName').focus(), 100);
 }
@@ -1182,9 +1532,10 @@ function openEditModal(idx){
   $('modalSub').textContent   = 'Altere o nome ou ícone desta categoria.';
   $('modalOkBtn').textContent = 'Salvar alterações';
   $('newCatName').value = c.name;
-  // rebuild grid with current icon pre-selected
   selectedIco = c.ico;
-  buildIcoGridWith(c.ico);
+  buildIcoGridWith(c.ico || ICO_OPTS[0]);
+  // reset to local tab
+  showIcoTab('local');
   $('modalOv').classList.add('show');
   setTimeout(()=>$('newCatName').focus(), 100);
 }
@@ -1296,7 +1647,7 @@ function saveAll(){
 }
 
 function buildContext(){
-  return cats.filter(c=>c.text.trim()).map(c=>`[${c.ico} ${c.name}]\n${c.text.trim()}`).join('\n\n');
+  return cats.filter(c=>c.text.trim()).map(c=>'[' + c.name + ']\n' + c.text.trim()).join('\n\n');
 }
 
 /* ════════════════════════════════════
@@ -1632,89 +1983,129 @@ async function doSend(text, isAudio){
 /* ════════════════════════════════════
    AUDIO RECORDING
 ════════════════════════════════════ */
-async function toggleRec(){
-  if(mediaRec && mediaRec.state==='recording'){ stopRec(); return; }
+/* ════════════════════════════════════
+   WHATSAPP-STYLE MIC: hold to record, slide to cancel
+════════════════════════════════════ */
+let recCancelled = false;
+let recStartX    = 0;
+const CANCEL_THRESHOLD = 80; // px to slide left to cancel
 
-  // Check if Permissions API is available (modern mobile Chrome)
+function showMicDenied(){
+  const isIOS     = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  let tip = isIOS    ? 'No iPhone/iPad: Configurações → Safari → Microfone → Permitir.'
+          : isAndroid? 'No Android: toque no cadeado 🔒 na barra do Chrome → Microfone → Permitir.'
+          :            'Clique no cadeado 🔒 na barra de endereço → Microfone → Permitir.';
+  addMsg('🎤 Permissão do microfone negada.\n\n'+tip+'\n\nRecarregue a página após liberar.', false);
+}
+
+async function checkMicPermission(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    addMsg('🎤 Seu navegador não suporta gravação. Use Chrome, Firefox ou Safari com HTTPS.',false);
+    return false;
+  }
   if(navigator.permissions){
     try{
-      const perm = await navigator.permissions.query({name:'microphone'});
-      if(perm.state === 'denied'){
-        showMicDenied();
-        return;
-      }
-    }catch(e){ /* permissions API not supported, proceed normally */ }
+      const p = await navigator.permissions.query({name:'microphone'});
+      if(p.state==='denied'){ showMicDenied(); return false; }
+    }catch(e){}
   }
+  return true;
+}
 
-  // If no mediaDevices (HTTP or old browser), warn clearly
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    addMsg('🎤 Seu navegador não suporta gravação de áudio. Certifique-se de estar usando HTTPS e um navegador atualizado (Chrome, Firefox ou Safari).',false);
-    return;
-  }
-
+async function startRec(){
+  if(!(await checkMicPermission())) return;
   try{
-    // This triggers the native permission dialog on mobile
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio:{
-        echoCancellation:true,
-        noiseSuppression:true,
-        sampleRate:16000
-      }
+      audio:{echoCancellation:true, noiseSuppression:true, sampleRate:16000}
     });
-    audioChunks=[];
+    audioChunks  = [];
+    recCancelled = false;
 
-    // Pick best supported MIME type
     const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4']
       .find(m => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) || '';
-
     mediaRec = new MediaRecorder(stream, mimeType ? {mimeType} : {});
-    // Store actual mime type for use in transcription
     recordedMimeType = mediaRec.mimeType || mimeType || 'audio/webm';
     mediaRec.ondataavailable = e=>{ if(e.data.size>0) audioChunks.push(e.data); };
-    mediaRec.onstop = processAudio;
-    mediaRec.start(250); // collect chunks every 250ms
+    mediaRec.onstop = ()=>{ if(!recCancelled) processAudio(); };
+    mediaRec.start(250);
+
     $('audioBtn').classList.add('recording');
     $('recBar').classList.add('show');
+    $('inBox').style.display = 'none';
     recSeconds=0; updateTimer();
-    recInterval = setInterval(()=>{ recSeconds++; updateTimer(); },1000);
+    recInterval = setInterval(()=>{ recSeconds++; updateTimer(); }, 1000);
+    if(navigator.vibrate) navigator.vibrate(40);
   }catch(err){
-    if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError'){
-      showMicDenied();
-    } else if(err.name==='NotFoundError'){
-      addMsg('🎤 Nenhum microfone encontrado. Conecte um microfone e tente novamente.',false);
-    } else {
-      addMsg('🎤 Não foi possível acessar o microfone: '+err.message,false);
-    }
+    if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError') showMicDenied();
+    else if(err.name==='NotFoundError') addMsg('🎤 Nenhum microfone encontrado.',false);
+    else addMsg('🎤 Erro ao acessar microfone: '+err.message,false);
   }
 }
 
-function showMicDenied(){
-  // Show inline message with instructions
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isAndroid = /Android/.test(navigator.userAgent);
-  let instrucao = '';
-  if(isIOS){
-    instrucao = 'No iPhone/iPad: Configurações → Safari → Microfone → Permitir.';
-  } else if(isAndroid){
-    instrucao = 'No Android: toque no ícone 🔒 na barra do Chrome → Microfone → Permitir.';
-  } else {
-    instrucao = 'Clique no ícone de cadeado 🔒 na barra de endereço → Microfone → Permitir.';
-  }
-  addMsg('🎤 Permissão do microfone negada.\n\n'+instrucao+'\n\nRecarregue a página após liberar a permissão.', false);
+function stopRec(cancel){
+  if(!mediaRec) return;
+  recCancelled = !!cancel;
+  clearInterval(recInterval);
+  $('audioBtn').classList.remove('recording');
+  $('recBar').classList.remove('show');
+  $('inBox').style.display = '';
+  mediaRec.stop();
+  mediaRec.stream.getTracks().forEach(t=>t.stop());
 }
 
 function updateTimer(){
   const m=Math.floor(recSeconds/60), s=recSeconds%60;
-  $('recTimer').textContent=m+':'+(s<10?'0':'')+s;
+  $('recTimer').textContent = m+':'+(s<10?'0':'')+s;
 }
 
-function stopRec(){
-  if(!mediaRec) return;
-  mediaRec.stop();
-  mediaRec.stream.getTracks().forEach(t=>t.stop());
-  clearInterval(recInterval);
-  $('audioBtn').classList.remove('recording');
-  $('recBar').classList.remove('show');
+/* ── Bind recording events ──
+   Mobile: hold (touchstart→touchend) with slide-to-cancel
+   Desktop: click to start, then [send] or [trash] to finish
+── */
+function initAudioBtn(){
+  const btn  = $('audioBtn');
+  const isMobile = ()=> window.matchMedia('(pointer:coarse)').matches;
+
+  /* TOUCH — hold to record, slide to cancel */
+  btn.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    recStartX = e.touches[0].clientX;
+    startRec();
+  }, {passive:false});
+
+  btn.addEventListener('touchmove', function(e){
+    if(!mediaRec || mediaRec.state!=='recording') return;
+    const delta = recStartX - e.touches[0].clientX;
+    // no cancel-zone on new bar UI, just visual feedback
+  }, {passive:true});
+
+  btn.addEventListener('touchend', function(e){
+    if(!mediaRec || mediaRec.state!=='recording') return;
+    finishRec(); // release = send
+  }, {passive:true});
+
+  btn.addEventListener('touchcancel', function(){
+    cancelRec();
+  }, {passive:true});
+
+  /* MOUSE (desktop only) — single click toggles */
+  btn.addEventListener('click', function(e){
+    if(isMobile()) return; // handled by touch
+    if(mediaRec && mediaRec.state==='recording'){
+      finishRec();
+    } else {
+      startRec();
+    }
+  });
+}
+
+function finishRec(){
+  stopRec(false);
+}
+function cancelRec(){
+  stopRec(true);
+  if(navigator.vibrate) navigator.vibrate([30,30,30]);
 }
 
 /* ── Transcribe via Gemini (1.5-flash handles audio reliably) ── */

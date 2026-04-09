@@ -6,6 +6,7 @@
 <title>Secretária Paroquial 24h</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -95,7 +96,7 @@ body{
   min-height:44px;
   padding:10px;border-radius:var(--r-md);
   border:none;background:transparent;cursor:pointer;
-  font-family:var(--fb);font-size:14px;color:var(--text-2);
+  font-family:var(--fb);font-size:15px;color:var(--text-2);
   font-weight:400;transition:background .14s,color .14s;text-align:left;
   -webkit-tap-highlight-color:transparent;
 }
@@ -182,7 +183,7 @@ body{
 .empty{max-width:520px;margin:0 auto;padding:28px 16px;text-align:center;animation:fu .5s ease;}
 .e-cross{font-size:30px;margin-bottom:12px;display:block;filter:drop-shadow(0 2px 6px rgba(196,163,90,.3));}
 .e-title{font-family:var(--fd);font-size:22px;font-weight:600;color:var(--text-1);margin-bottom:8px;line-height:1.25;}
-.e-sub{font-size:13.5px;color:var(--text-2);font-weight:300;line-height:1.7;max-width:340px;margin:0 auto 20px;}
+.e-sub{font-size:15px;color:var(--text-2);font-weight:300;line-height:1.7;max-width:340px;margin:0 auto 20px;}
 .sugs{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:380px;margin:0 auto;}
 .sug{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
@@ -203,7 +204,7 @@ body{
 .av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
 .av.bot{background:linear-gradient(145deg,var(--brand),#4A3018);box-shadow:var(--sh-sm);}
 .av.usr{background:var(--user-bg);}
-.sender{font-size:11px;color:var(--text-3);font-weight:500;}
+.sender{font-size:12px;color:var(--text-3);font-weight:500;}
 .bubble{
   max-width:86%;
   padding:10px 14px;
@@ -217,6 +218,19 @@ body{
   border-radius:4px var(--r-xl) var(--r-xl) var(--r-xl);
   color:var(--text-1);box-shadow:var(--sh-sm);
 }
+/* ── Markdown rendering inside bot bubbles ── */
+.bot .bubble p{margin:0 0 8px;}
+.bot .bubble p:last-child{margin-bottom:0;}
+.bot .bubble ul,.bot .bubble ol{margin:6px 0 8px;padding-left:18px;}
+.bot .bubble li{margin-bottom:3px;line-height:1.55;}
+.bot .bubble strong{font-weight:500;color:var(--text-1);}
+.bot .bubble em{font-style:italic;}
+.bot .bubble h1,.bot .bubble h2,.bot .bubble h3{font-family:var(--fd);font-weight:600;color:var(--text-1);margin:10px 0 4px;}
+.bot .bubble h1{font-size:16px;}
+.bot .bubble h2{font-size:15px;}
+.bot .bubble h3{font-size:14px;}
+.bot .bubble code{font-family:monospace;font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:4px;}
+.bot .bubble hr{border:none;border-top:1px solid var(--border);margin:8px 0;}
 .user .bubble{
   background:var(--user-bg);color:var(--user-fg);
   border-radius:var(--r-xl) var(--r-xl) 4px var(--r-xl);
@@ -397,22 +411,198 @@ body{
 .audio-btn.recording svg{stroke:#D04B3C;}
 
 /* ════════════════════════════════════
-   SETTINGS VIEW
+   SETTINGS VIEW — two-panel redesign
 ════════════════════════════════════ */
-.st-wrap{
-  flex:1;overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  /* generous bottom padding so content above keyboard is reachable */
-  padding:20px 16px 120px;
+.cfg-topbar{
+  flex-shrink:0;
+  padding:12px 16px 0;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+}
+.cfg-tabs{
+  display:flex;gap:2px;
+  max-width:580px;margin:0 auto;
+}
+.cfg-tab{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 8px;
+  border:none;background:transparent;cursor:pointer;
+  font-family:var(--fb);font-size:13px;font-weight:400;
+  color:var(--text-3);
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  transition:color .15s,border-color .15s;
+  position:relative;
+  -webkit-tap-highlight-color:transparent;
+}
+.cfg-tab svg{flex-shrink:0;opacity:.6;transition:opacity .15s;}
+.cfg-tab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:500;}
+.cfg-tab.active svg{opacity:1;}
+.cfg-tab:not(.active):active{color:var(--text-2);}
+.cfg-tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;border-radius:9px;
+  background:var(--brand);color:#fff;
+  font-size:10px;font-weight:600;padding:0 5px;
+  line-height:1;
+}
+.cfg-tab-badge:empty{display:none;}
+
+/* ── Panels ── */
+.cfg-panel{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;}
+.cfg-panel.active{display:flex;}
+.cfg-scroll{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:20px 16px 100px;
   min-height:0;
 }
-.st-wrap::-webkit-scrollbar{width:3px;}
-.st-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-.st-inner{max-width:580px;margin:0 auto;}
-.st-title{font-family:var(--fd);font-size:20px;font-weight:600;color:var(--text-1);margin-bottom:3px;}
-.st-sub{font-size:13px;color:var(--text-3);margin-bottom:22px;font-weight:300;}
-.st-sec{margin-bottom:22px;}
-.sec-lbl{font-size:10px;font-weight:500;color:var(--text-3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
+.cfg-scroll::-webkit-scrollbar{width:3px;}
+.cfg-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.cfg-inner{max-width:580px;margin:0 auto;display:flex;flex-direction:column;gap:14px;}
+
+/* ── Config blocks ── */
+.cfg-block{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+}
+.cfg-block-muted{
+  background:var(--surface2);
+}
+.cfg-block-head{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px 12px;
+  border-bottom:1px solid var(--border);
+}
+.cfg-block-ico{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.cfg-ico-brand{background:var(--brand-pale);color:var(--brand);}
+.cfg-ico-brand svg{stroke:var(--brand);}
+.cfg-ico-purple{background:#EEEDFE;color:#534AB7;}
+.cfg-ico-purple svg{stroke:#534AB7;}
+.dark .cfg-ico-purple,:root.dark .cfg-ico-purple{background:#2D2B45;color:#A89FE8;}
+.dark .cfg-ico-purple svg,:root.dark .cfg-ico-purple svg{stroke:#A89FE8;}
+@media(prefers-color-scheme:dark){:root:not(.light) .cfg-ico-purple{background:#2D2B45;color:#A89FE8;}:root:not(.light) .cfg-ico-purple svg{stroke:#A89FE8;}}
+.cfg-ico-gold{background:var(--gold-pale);color:#7A5C1E;}
+.cfg-ico-gold svg{stroke:#7A5C1E;}
+.cfg-ico-muted{background:var(--surface3);color:var(--text-3);}
+.cfg-ico-muted svg{stroke:var(--text-3);}
+.cfg-block-title{font-size:15px;font-weight:500;color:var(--text-1);}
+.cfg-block-sub{font-size:13px;color:var(--text-3);margin-top:1px;font-weight:300;}
+
+/* ── cat-tab pills: dark mode contrast fix ── */
+.dark .cat-tab,:root.dark .cat-tab{background:var(--surface3);border-color:var(--border2);color:var(--text-1);}
+.dark .cat-tab.active,:root.dark .cat-tab.active{background:var(--brand);color:#fff;border-color:var(--brand);}
+@media(prefers-color-scheme:dark){
+  :root:not(.light) .cat-tab{background:var(--surface3);border-color:var(--border2);color:var(--text-1);}
+  :root:not(.light) .cat-tab.active{background:var(--brand);color:#fff;border-color:var(--brand);}
+}
+/* ── cfg-stat pills: dark mode fix ── */
+.dark .cfg-stat,:root.dark .cfg-stat{background:var(--surface3);border-color:var(--border2);color:var(--text-1);}
+@media(prefers-color-scheme:dark){:root:not(.light) .cfg-stat{background:var(--surface3);border-color:var(--border2);color:var(--text-1);}}
+.cfg-field{padding:14px 16px;}
+.cfg-field + .cfg-field{padding-top:0;}
+.cfg-lbl{display:block;font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:7px;}
+
+/* ── Key input row ── */
+.cfg-key-row{display:flex;gap:8px;align-items:flex-start;}
+.cfg-key-input-wrap{
+  flex:1;position:relative;display:flex;align-items:center;
+}
+.cfg-key-ico{
+  position:absolute;left:11px;width:15px;height:15px;
+  stroke:var(--text-3);flex-shrink:0;pointer-events:none;
+}
+.cfg-key-input{padding-left:34px !important;padding-right:36px !important;width:100%;}
+.cfg-eye-btn{
+  position:absolute;right:10px;
+  width:28px;height:28px;border:none;background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);border-radius:6px;
+  -webkit-tap-highlight-color:transparent;
+  transition:color .14s,background .14s;
+}
+.cfg-eye-btn:hover{background:var(--surface2);color:var(--text-2);}
+.cfg-eye-btn svg{width:14px;height:14px;}
+.cfg-test-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:0 14px;height:44px;flex-shrink:0;
+  border-radius:var(--r-sm);
+  background:var(--brand-pale);border:1px solid var(--border2);
+  font-family:var(--fb);font-size:13px;color:var(--brand);
+  cursor:pointer;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .14s;
+}
+.cfg-test-btn:active{background:var(--brand);color:#fff;}
+.cfg-test-btn svg{width:13px;height:13px;stroke:currentColor;}
+
+/* ── Content hero ── */
+.cfg-content-hero{
+  background:linear-gradient(135deg,var(--brand-pale),var(--gold-pale));
+  border-color:var(--gold-dim);
+}
+.dark .cfg-content-hero,:root.dark .cfg-content-hero{background:var(--surface2);border-color:var(--border);}
+@media(prefers-color-scheme:dark){:root:not(.light) .cfg-content-hero{background:var(--surface2);border-color:var(--border);}}
+.cfg-content-hero .cfg-block-head{border:none;padding-bottom:0;}
+.cfg-hero-text{padding:14px 16px 10px;}
+.cfg-hero-stats{
+  display:flex;gap:6px;flex-wrap:wrap;
+  padding:0 16px 14px;
+}
+.cfg-stat{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.5);
+  border:1px solid var(--gold-dim);
+  border-radius:20px;padding:4px 10px;
+  font-size:11px;color:var(--text-2);
+}
+.cfg-stat-dot{width:6px;height:6px;border-radius:50%;background:var(--brand-soft);}
+.cfg-stat-dot.filled{background:#22C55E;}
+
+/* ── Categories block ── */
+.cfg-block-categories{padding:0;}
+.cfg-block-categories .cat-tabs{border-radius:var(--r-lg) var(--r-lg) 0 0;}
+.cfg-block-categories .cat-body{padding:14px;}
+
+/* ── Save button ── */
+.cfg-save-btn{
+  width:100%;
+  background:var(--user-bg);border:none;border-radius:var(--r-lg);
+  color:var(--user-fg);font-family:var(--fb);font-size:15px;font-weight:500;
+  padding:15px;cursor:pointer;letter-spacing:.2px;
+  box-shadow:var(--sh-md);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:52px;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .14s,transform .1s;
+}
+.cfg-save-btn:active{background:var(--user-bg-hover);transform:scale(.99);}
+.cfg-save-btn svg{width:15px;height:15px;stroke:var(--user-fg);}
+
+@media(max-width:640px){
+  .cfg-tab{font-size:12px;padding:10px 6px;}
+  .cfg-tab svg{display:none;}
+  .cfg-inner{gap:12px;}
+  .cfg-scroll{padding:16px 12px 100px;}
+}
+
+/* ── Nav badge ── */
+.nav-badge{
+  margin-left:auto;min-width:18px;height:18px;border-radius:9px;
+  background:var(--brand);color:#fff;
+  font-size:10px;font-weight:600;padding:0 5px;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+
+/* keep old .st-wrap for compat (unused but referenced) */
+.st-wrap{display:none;}
+
+
 
 .fc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-sm);}
 .fr{padding:13px 14px;border-bottom:1px solid var(--border);}
@@ -459,7 +649,7 @@ textarea.fi{resize:vertical;line-height:1.7;}
 .cat-tab{
   padding:7px 14px;
   border-radius:20px;
-  font-size:13px;font-family:var(--fb);font-weight:400;
+  font-size:14px;font-family:var(--fb);font-weight:400;
   color:var(--text-2);cursor:pointer;
   border:1.5px solid var(--border2);
   background:var(--surface);
@@ -588,6 +778,78 @@ textarea.fi{resize:vertical;line-height:1.7;}
 .save-btn:active{background:var(--user-bg-hover);}
 .save-btn svg{width:15px;height:15px;stroke:var(--user-fg);fill:none;stroke-width:2;}
 
+/* ── Action sheet (config nudge) ── */
+.asheet-ov{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.45);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .22s ease;
+}
+.asheet-ov.show{opacity:1;pointer-events:auto;}
+.asheet{
+  width:100%;max-width:480px;
+  background:var(--surface);
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:8px 20px calc(24px + var(--safe-b));
+  box-shadow:var(--sh-lg);
+  transform:translateY(100%);
+  transition:transform .28s cubic-bezier(.32,0,.2,1);
+}
+.asheet-ov.show .asheet{transform:translateY(0);}
+.asheet-handle{
+  width:36px;height:4px;border-radius:2px;
+  background:var(--border2);margin:0 auto 18px;
+}
+.asheet-ico{
+  width:52px;height:52px;border-radius:var(--r-lg);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 14px;
+}
+.asheet-ico svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;}
+.asheet-ico.ia{background:var(--brand-pale);color:var(--brand);}
+.asheet-ico.ia svg{stroke:var(--brand);}
+.asheet-ico.content{background:#EDF7F0;color:#1A6B35;}
+.asheet-ico.content svg{stroke:#1A6B35;}
+.dark .asheet-ico.content,:root.dark .asheet-ico.content{background:#1A2E22;color:#4ADE80;}
+.dark .asheet-ico.content svg,:root.dark .asheet-ico.content svg{stroke:#4ADE80;}
+@media(prefers-color-scheme:dark){:root:not(.light) .asheet-ico.content{background:#1A2E22;color:#4ADE80;}:root:not(.light) .asheet-ico.content svg{stroke:#4ADE80;}}
+.asheet-title{
+  font-family:var(--fd);font-size:17px;font-weight:600;
+  color:var(--text-1);text-align:center;margin-bottom:7px;
+}
+.asheet-desc{
+  font-size:14px;color:var(--text-2);text-align:center;
+  line-height:1.6;font-weight:300;margin-bottom:22px;
+}
+.asheet-acts{display:flex;flex-direction:column;gap:10px;}
+.asheet-cta{
+  width:100%;padding:15px;border-radius:var(--r-lg);
+  background:var(--user-bg);color:var(--user-fg);
+  border:none;font-family:var(--fb);font-size:15px;font-weight:500;
+  cursor:pointer;min-height:52px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:var(--sh-sm);
+  -webkit-tap-highlight-color:transparent;
+  transition:background .14s,transform .1s;
+}
+.asheet-cta:active{background:var(--user-bg-hover);transform:scale(.99);}
+.asheet-cta svg{width:16px;height:16px;stroke:var(--user-fg);fill:none;stroke-width:2;}
+.asheet-dismiss{
+  width:100%;padding:13px;border-radius:var(--r-lg);
+  background:transparent;border:1px solid var(--border);
+  font-family:var(--fb);font-size:15px;color:var(--text-2);
+  cursor:pointer;min-height:48px;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .14s;
+}
+.asheet-dismiss:active{background:var(--surface2);}
+
+@media(min-width:641px){
+  .asheet-ov{align-items:center;padding:20px;}
+  .asheet{border-radius:var(--r-xl);max-width:420px;}
+}
+
 /* ── Toast ── */
 .toast{
   position:fixed;
@@ -621,6 +883,61 @@ textarea.fi{resize:vertical;line-height:1.7;}
 /* ════════════════════════════════════
    RESPONSIVE
 ════════════════════════════════════ */
+/* ── Dark mode via .dark class (toggle) OR system preference ── */
+/* Palette inspired by Sublime Text Monokai: warm gray-greens, no pure black */
+.dark,:root.dark,body.dark{
+  --bg:#272822;
+  --surface:#2E2D28;
+  --surface2:#35342E;
+  --surface3:#3E3D37;
+  --border:#46453E;
+  --border2:#5A5950;
+  --brand:#C4956A;
+  --brand-hover:#D4A57A;
+  --brand-soft:#8A6848;
+  --brand-pale:#322B20;
+  --gold:#E8C87A;
+  --gold-dim:#504530;
+  --gold-pale:#2C2718;
+  --user-bg:#7B5E3A;
+  --user-bg-hover:#8B6E4A;
+  --user-fg:#FFF8F2;
+  --bot-bg:#2E2D28;
+  --text-1:#F8F8F2;
+  --text-2:#CFCFBE;
+  --text-3:#75715E;
+  --sh-sm:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
+  --sh-md:0 4px 16px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.25);
+  --sh-lg:0 12px 40px rgba(0,0,0,.4),0 4px 12px rgba(0,0,0,.3);
+}
+@media(prefers-color-scheme:dark){
+  :root:not(.light){
+    --bg:#272822;
+    --surface:#2E2D28;
+    --surface2:#35342E;
+    --surface3:#3E3D37;
+    --border:#46453E;
+    --border2:#5A5950;
+    --brand:#C4956A;
+    --brand-hover:#D4A57A;
+    --brand-soft:#8A6848;
+    --brand-pale:#322B20;
+    --gold:#E8C87A;
+    --gold-dim:#504530;
+    --gold-pale:#2C2718;
+    --user-bg:#7B5E3A;
+    --user-bg-hover:#8B6E4A;
+    --user-fg:#FFF8F2;
+    --bot-bg:#2E2D28;
+    --text-1:#F8F8F2;
+    --text-2:#CFCFBE;
+    --text-3:#75715E;
+    --sh-sm:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
+    --sh-md:0 4px 16px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.25);
+    --sh-lg:0 12px 40px rgba(0,0,0,.4),0 4px 12px rgba(0,0,0,.3);
+  }
+}
+
 /* ── Mobile: ≤640px ── */
 @media(max-width:640px){
   /* sidebar becomes a drawer */
@@ -670,6 +987,42 @@ textarea.fi{resize:vertical;line-height:1.7;}
   .msgs{padding:24px 0 8px;}
 }
 
+/* ── Theme toggle button ── */
+.theme-btn{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  min-height:44px;padding:10px;border-radius:var(--r-md);
+  border:none;background:transparent;cursor:pointer;
+  font-family:var(--fb);font-size:14px;color:var(--text-2);
+  font-weight:400;transition:background .14s,color .14s;text-align:left;
+  -webkit-tap-highlight-color:transparent;
+}
+.theme-btn:active{background:var(--surface2);}
+.theme-toggle-track{
+  width:36px;height:20px;border-radius:10px;
+  background:var(--border2);
+  position:relative;transition:background .2s;flex-shrink:0;
+}
+.theme-toggle-track.on{background:var(--brand);}
+.theme-toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:14px;height:14px;border-radius:50%;
+  background:#fff;transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.theme-toggle-track.on .theme-toggle-thumb{transform:translateX(16px);}
+.theme-btn-label{display:flex;align-items:center;gap:9px;}
+.theme-btn-label svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;opacity:.6;}
+
+/* ── Theme toggle in topbar (mobile) ── */
+.tb-theme-btn{
+  width:36px;height:36px;border-radius:var(--r-md);
+  border:1px solid var(--border);background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);-webkit-tap-highlight-color:transparent;
+  margin-right:4px;
+}
+.tb-theme-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;}
+
 /* ── Provider selector ── */
 .provider-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;
@@ -700,6 +1053,8 @@ textarea.fi{resize:vertical;line-height:1.7;}
   background:linear-gradient(135deg,var(--gold-pale),#FFF8EE);
   color:var(--text-2);
 }
+.dark .prov-info-card,:root.dark .prov-info-card{background:var(--surface2);border-color:var(--border2);}
+@media(prefers-color-scheme:dark){:root:not(.light) .prov-info-card{background:var(--surface2);border-color:var(--border2);}}
 .prov-info-card a{color:var(--brand);}
 .prov-info-card strong{font-weight:500;color:var(--text-1);}
 
@@ -762,10 +1117,148 @@ textarea.fi{resize:vertical;line-height:1.7;}
 .ico-opt-img:active{border-color:var(--brand-soft);background:var(--brand-pale);}
 .ico-opt-img.sel{border-color:var(--brand);background:var(--brand-pale);}
 .ico-opt-img.sel img{opacity:1;}
+/* ════════════════════════════════════
+   ONBOARDING — COACH MARKS
+════════════════════════════════════ */
+.cm-ov{
+  position:fixed;inset:0;z-index:1000;
+  pointer-events:none;
+  opacity:0;transition:opacity .3s ease;
+}
+.cm-ov.show{opacity:1;pointer-events:auto;}
 
-</style>
+/* SVG overlay that punches the spotlight hole */
+.cm-svg{
+  position:absolute;inset:0;width:100%;height:100%;
+  pointer-events:none;
+}
+
+/* Spotlight ring (animated border around the hole) */
+.cm-ring{
+  position:absolute;
+  border:2.5px solid var(--brand);
+  border-radius:14px;
+  box-shadow:0 0 0 4px rgba(196,149,106,.18);
+  pointer-events:none;
+  transition:top .35s cubic-bezier(.4,0,.2,1),
+             left .35s cubic-bezier(.4,0,.2,1),
+             width .35s cubic-bezier(.4,0,.2,1),
+             height .35s cubic-bezier(.4,0,.2,1),
+             border-radius .35s;
+  animation:cm-pulse 2s ease infinite;
+}
+@keyframes cm-pulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(196,149,106,.18);}
+  50%     {box-shadow:0 0 0 8px rgba(196,149,106,.08);}
+}
+
+/* Tooltip card */
+.cm-card{
+  position:absolute;
+  width:min(320px,calc(100vw - 32px));
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  box-shadow:var(--sh-lg);
+  padding:20px 20px 16px;
+  transition:top .35s cubic-bezier(.4,0,.2,1),
+             left .35s cubic-bezier(.4,0,.2,1),
+             opacity .2s;
+}
+.cm-step-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--brand-pale);border-radius:20px;
+  padding:3px 10px;font-size:11px;font-weight:500;
+  color:var(--brand);margin-bottom:10px;
+}
+.cm-step-badge svg{width:11px;height:11px;stroke:var(--brand);fill:none;stroke-width:2;}
+.cm-title{
+  font-family:var(--fd);font-size:16px;font-weight:600;
+  color:var(--text-1);margin-bottom:6px;line-height:1.3;
+}
+.cm-desc{
+  font-size:13.5px;color:var(--text-2);line-height:1.65;
+  font-weight:300;margin-bottom:16px;
+}
+.cm-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.cm-skip{
+  font-size:12px;color:var(--text-3);cursor:pointer;
+  background:none;border:none;font-family:var(--fb);
+  padding:4px 0;-webkit-tap-highlight-color:transparent;
+  transition:color .14s;flex-shrink:0;
+}
+.cm-skip:hover{color:var(--text-2);}
+.cm-dots{display:flex;gap:5px;align-items:center;flex:1;justify-content:center;}
+.cm-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--border2);transition:all .2s;
+}
+.cm-dot.active{background:var(--brand);width:18px;border-radius:3px;}
+.cm-next{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:var(--r-md);
+  background:var(--user-bg);color:var(--user-fg);
+  border:none;font-family:var(--fb);font-size:13px;font-weight:500;
+  cursor:pointer;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .14s,transform .1s;
+}
+.cm-next:active{background:var(--user-bg-hover);transform:scale(.97);}
+.cm-next svg{width:13px;height:13px;stroke:var(--user-fg);fill:none;stroke-width:2.5;}
+
+/* Arrow pointer on the card */
+.cm-arrow{
+  position:absolute;width:14px;height:14px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  transform:rotate(45deg);
+}
+.cm-arrow.top   {top:-7px; border-bottom:none;border-right:none;}
+.cm-arrow.bottom{bottom:-7px;border-top:none;border-left:none;}
+.cm-arrow.left  {left:-7px; border-right:none;border-bottom:none;}
+.cm-arrow.right {right:-7px;border-left:none;border-top:none;}
+
+/* welcome step: no spotlight, centered card */
+.cm-welcome .cm-card{
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  width:min(360px,calc(100vw - 40px));
+}
+.cm-welcome .cm-card .cm-actions{flex-direction:column;gap:10px;}
+.cm-welcome .cm-card .cm-next{width:100%;justify-content:center;padding:13px;}
+.cm-welcome .cm-card .cm-skip{padding:6px;}
+.cm-welcome-ico{
+  width:64px;height:64px;border-radius:18px;
+  background:linear-gradient(145deg,var(--brand),#4A3018);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 16px;
+  box-shadow:var(--sh-md);
+}
+
 </head>
 <body>
+
+<!-- ══ ONBOARDING COACH MARKS ══ -->
+<div class="cm-ov" id="cmOv">
+  <svg class="cm-svg" id="cmSvg"><defs><mask id="cmMask"><rect width="100%" height="100%" fill="white"/><rect id="cmHole" rx="12" fill="black"/></mask></defs><rect width="100%" height="100%" fill="rgba(0,0,0,.72)" mask="url(#cmMask)"/></svg>
+  <div class="cm-ring" id="cmRing"></div>
+  <div class="cm-card" id="cmCard">
+    <div class="cm-step-badge" id="cmBadge"></div>
+    <div class="cm-title" id="cmTitle"></div>
+    <div class="cm-desc"  id="cmDesc"></div>
+    <div class="cm-actions">
+      <button class="cm-skip" onclick="cmSkip()">Pular tour</button>
+      <div class="cm-dots" id="cmDots"></div>
+      <button class="cm-next" id="cmNextBtn" onclick="cmNext()">
+        <span id="cmNextLbl">Próximo</span>
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="cm-arrow" id="cmArrow"></div>
+  </div>
+</div>
 
 <div class="ov" id="ov" onclick="closeSb()"></div>
 
@@ -846,14 +1339,29 @@ textarea.fi{resize:vertical;line-height:1.7;}
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         Assistente
       </button>
-      <button class="nav-btn" id="nav-settings" onclick="sv('settings')">
+      <button class="nav-btn" id="nav-settings" onclick="sv('settings','ia')">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        Dados da Paróquia
+        Configurações de IA
+      </button>
+      <button class="nav-btn" id="nav-content" onclick="sv('settings','content')">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Conteúdo da Paróquia
       </button>
       <div class="nav-lbl">Ações</div>
       <button class="nav-btn" onclick="newChat()">
         <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nova conversa
+      </button>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+        <span class="theme-btn-label">
+          <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <span id="themeLbl">Tema escuro</span>
+        </span>
+        <div class="theme-toggle-track" id="themeTrack"><div class="theme-toggle-thumb"></div></div>
+      </button>
+      <button class="nav-btn" onclick="cmStart(true)" style="color:var(--brand);margin-top:2px;">
+        <svg viewBox="0 0 24 24" style="opacity:1;stroke:var(--brand);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Rever tour
       </button>
     </div>
     <div class="sb-foot">
@@ -871,9 +1379,14 @@ textarea.fi{resize:vertical;line-height:1.7;}
         <div class="tb-icon">✝</div>
         <div class="tb-title">Secretária Paroquial</div>
       </div>
-      <button class="menu-btn" onclick="openSbHistory()">
-        <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <button class="tb-theme-btn" onclick="toggleTheme()" title="Alternar tema" id="tbThemeBtn">
+          <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="menu-btn" onclick="openSbHistory()">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- ══ CHAT VIEW ══ -->
@@ -894,12 +1407,7 @@ textarea.fi{resize:vertical;line-height:1.7;}
           <span class="e-cross">✝</span>
           <div class="e-title">Bem-vindo à Secretaria</div>
           <div class="e-sub">Estou aqui para responder suas dúvidas sobre nossa paróquia — horários, sacramentos, avisos e muito mais.</div>
-          <div class="sugs">
-            <button class="sug" onclick="useSug('Quais são os horários das missas?')"><span class="sug-ico">🕊</span>Horários das missas</button>
-            <button class="sug" onclick="useSug('Quando são as confissões?')"><span class="sug-ico">🙏</span>Confissões</button>
-            <button class="sug" onclick="useSug('Quais são os avisos desta semana?')"><span class="sug-ico">📋</span>Avisos da semana</button>
-            <button class="sug" onclick="useSug('Como entro em contato com a paróquia?')"><span class="sug-ico">📞</span>Contato</button>
-          </div>
+          <div class="sugs" id="initSugs"></div>
         </div>
       </div>
 
@@ -944,101 +1452,185 @@ textarea.fi{resize:vertical;line-height:1.7;}
 
     <!-- ══ SETTINGS VIEW ══ -->
     <div class="view" id="settingsView">
-      <div class="st-wrap">
-        <div class="st-inner">
-          <div class="st-title">Dados da Paróquia</div>
-          <div class="st-sub">Configure as informações que o assistente usará para responder.</div>
 
-          <!-- API PROVIDER -->
-          <div class="st-sec">
-            <div class="sec-lbl">Provedor de IA</div>
+      <!-- Settings top bar with tab switcher -->
+      <div class="cfg-topbar">
+        <div class="cfg-tabs">
+          <button class="cfg-tab active" id="cfgTabIa" onclick="switchCfgTab('ia')">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Inteligência Artificial
+          </button>
+          <button class="cfg-tab" id="cfgTabContent" onclick="switchCfgTab('content')">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Conteúdo
+            <span class="cfg-tab-badge" id="cfgContentBadge"></span>
+          </button>
+        </div>
+      </div>
 
-            <!-- Provider cards -->
-            <div class="provider-grid" id="providerGrid">
-              <button class="prov-card active" id="prov-gemini" onclick="selectProvider('gemini')">
-                <span class="prov-logo">✦</span>
-                <span class="prov-name">Gemini</span>
-                <span class="prov-tag">Google</span>
-              </button>
-              <button class="prov-card" id="prov-groq" onclick="selectProvider('groq')">
-                <span class="prov-logo">⚡</span>
-                <span class="prov-name">Groq</span>
-                <span class="prov-tag">Ultra-rápido</span>
-              </button>
+      <!-- ── PANEL: IA ── -->
+      <div class="cfg-panel active" id="cfgPanelIa">
+        <div class="cfg-scroll">
+          <div class="cfg-inner">
+
+            <!-- Identity block -->
+            <div class="cfg-block">
+              <div class="cfg-block-head">
+                <div class="cfg-block-ico cfg-ico-brand">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 9h4"/><path d="M12 7v5"/><path d="M14 22v-4a2 2 0 00-4 0v4"/><path d="M18 22V5.618a1 1 0 00-.553-.894l-4.553-2.277a2 2 0 00-1.788 0L6.553 4.724A1 1 0 006 5.618V22"/><path d="M2 22h20"/></svg>
+                </div>
+                <div>
+                  <div class="cfg-block-title">Identidade da Paróquia</div>
+                  <div class="cfg-block-sub">Nome usado pelo assistente nas respostas</div>
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label class="cfg-lbl">Nome da Paróquia</label>
+                <input class="fi" type="text" id="churchName" placeholder="Ex: Paróquia Nossa Senhora das Graças"/>
+              </div>
             </div>
 
-            <!-- Provider info card (changes per provider) -->
-            <div class="prov-info-card" id="provInfoCard"></div>
-
-            <!-- Model selector -->
-            <div class="fc" style="margin-top:10px;">
-              <div class="fr">
-                <label class="fl">Modelo</label>
+            <!-- Provider block -->
+            <div class="cfg-block">
+              <div class="cfg-block-head">
+                <div class="cfg-block-ico cfg-ico-purple">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 11V7"/><circle cx="12" cy="5" r="2"/><path d="M8 15h.01M12 15h.01M16 15h.01"/><path d="M7 11V9a5 5 0 0110 0v2"/></svg>
+                </div>
+                <div>
+                  <div class="cfg-block-title">Provedor de IA</div>
+                  <div class="cfg-block-sub">Escolha o serviço que vai responder os fiéis</div>
+                </div>
+              </div>
+              <div class="provider-grid" id="providerGrid">
+                <button class="prov-card active" id="prov-gemini" onclick="selectProvider('gemini')">
+                  <span class="prov-logo">✦</span>
+                  <span class="prov-name">Gemini</span>
+                  <span class="prov-tag">Google · Gratuito</span>
+                </button>
+                <button class="prov-card" id="prov-groq" onclick="selectProvider('groq')">
+                  <span class="prov-logo">⚡</span>
+                  <span class="prov-name">Groq</span>
+                  <span class="prov-tag">Ultra-rápido · Gratuito</span>
+                </button>
+              </div>
+              <div class="prov-info-card" id="provInfoCard"></div>
+              <div class="cfg-field" style="margin-top:12px;">
+                <label class="cfg-lbl">Modelo</label>
                 <select class="fi" id="modelSelect" onchange="onModelChange()"></select>
                 <div class="fd" id="modelDesc"></div>
               </div>
             </div>
 
-            <!-- API Key -->
-            <div class="fc" style="margin-top:10px;">
-              <div class="fr">
-                <label class="fl" id="keyLabel">Chave da API</label>
-                <div style="display:flex;gap:8px;align-items:center;">
-                  <input class="fi" type="password" id="apiKey" placeholder="" autocomplete="off" style="flex:1;" oninput="clearKeyStatus()"/>
-                  <button type="button" onclick="testApiKey()" style="padding:0 14px;height:44px;border-radius:var(--r-sm);background:var(--brand-pale);border:1px solid var(--border2);font-family:var(--fb);font-size:13px;color:var(--brand);cursor:pointer;white-space:nowrap;flex-shrink:0;min-width:70px;">Testar</button>
+            <!-- API Key block -->
+            <div class="cfg-block">
+              <div class="cfg-block-head">
+                <div class="cfg-block-ico cfg-ico-gold">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
                 </div>
-                <div id="keyStatus" style="margin-top:7px;font-size:12px;display:none;"></div>
+                <div>
+                  <div class="cfg-block-title">Chave de API</div>
+                  <div class="cfg-block-sub">Sua chave de acesso ao provedor selecionado</div>
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label class="cfg-lbl" id="keyLabel">Chave da API Gemini</label>
+                <div class="cfg-key-row">
+                  <div class="cfg-key-input-wrap">
+                    <svg class="cfg-key-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                    <input class="fi cfg-key-input" type="password" id="apiKey" placeholder="Cole sua chave aqui..." autocomplete="off" oninput="clearKeyStatus()"/>
+                    <button class="cfg-eye-btn" id="eyeBtn" onclick="toggleKeyVisibility()" title="Mostrar/ocultar chave">
+                      <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                  <button class="cfg-test-btn" onclick="testApiKey()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Testar
+                  </button>
+                </div>
+                <div id="keyStatus"></div>
               </div>
             </div>
-          </div>
 
-          <!-- Groq backup key (shown always, explained as fallback) -->
-          <div class="st-sec" id="groqBackupSec">
-            <div class="sec-lbl">Backup automático — Groq</div>
-            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:10px;font-size:12px;color:var(--text-2);line-height:1.65;">
-              Se o Gemini atingir o limite, o sistema usa o <strong>Groq Llama 3.1 8B</strong> automaticamente.<br>
-              Chave gratuita em <a href="https://console.groq.com/keys" target="_blank" style="color:var(--brand);">console.groq.com</a> — começa com <code style="font-size:11px;background:var(--surface3);padding:1px 5px;border-radius:4px;">gsk_</code>
-            </div>
-            <div class="fc">
-              <div class="fr">
-                <label class="fl">Chave Groq (backup)</label>
+            <!-- Backup key block -->
+            <div class="cfg-block cfg-block-muted" id="groqBackupSec">
+              <div class="cfg-block-head">
+                <div class="cfg-block-ico cfg-ico-muted">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div>
+                  <div class="cfg-block-title">Backup automático</div>
+                  <div class="cfg-block-sub">Se o Gemini falhar, usa Groq automaticamente</div>
+                </div>
+              </div>
+              <div class="cfg-field">
+                <label class="cfg-lbl">Chave Groq (backup opcional)</label>
                 <input class="fi" type="password" id="groqBackupKey" placeholder="gsk_..." autocomplete="off"/>
-                <div class="fd">Opcional. Usado automaticamente quando o Gemini falhar.</div>
+                <div class="fd">Gratuito em <a href="https://console.groq.com/keys" target="_blank" style="color:var(--brand);">console.groq.com</a> — ativado automaticamente em caso de falha.</div>
               </div>
             </div>
-          </div>
 
-          <!-- Identity -->
-          <div class="st-sec">
-            <div class="sec-lbl">Identidade</div>
-            <div class="fc">
-              <div class="fr">
-                <label class="fl">Nome da Paróquia</label>
-                <input class="fi" type="text" id="churchName" placeholder="Ex: Paróquia Nossa Senhora das Graças"/>
-              </div>
-            </div>
-          </div>
+            <!-- Save IA button -->
+            <button class="cfg-save-btn" onclick="saveIa()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Salvar configurações de IA
+            </button>
 
-          <!-- CATEGORIES -->
-          <div class="st-sec">
-            <div class="sec-lbl">Informações por categoria</div>
-            <div class="fc" id="catPanel">
-              <!-- tabs injected by JS -->
-              <div class="cat-tabs" id="catTabs"></div>
-              <!-- body injected by JS -->
-              <div class="cat-body" id="catBody"></div>
-            </div>
           </div>
-
-          <button class="save-btn" onclick="saveAll()">
-            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Salvar configurações
-          </button>
         </div>
       </div>
+
+      <!-- ── PANEL: CONTENT ── -->
+      <div class="cfg-panel" id="cfgPanelContent">
+        <div class="cfg-scroll">
+          <div class="cfg-inner">
+
+            <!-- Content header card -->
+            <div class="cfg-block cfg-content-hero">
+              <div class="cfg-hero-text">
+                <div class="cfg-block-title" style="font-size:15px;">Informações da Paróquia</div>
+                <div class="cfg-block-sub" style="margin-top:3px;">Preencha cada categoria com os dados que o assistente usará para responder os fiéis. Quanto mais completo, melhor as respostas.</div>
+              </div>
+              <div class="cfg-hero-stats" id="heroStats"></div>
+            </div>
+
+            <!-- Categories panel -->
+            <div class="cfg-block cfg-block-categories">
+              <div class="cat-tabs" id="catTabs"></div>
+              <div class="cat-body" id="catBody"></div>
+            </div>
+
+            <!-- Save content button -->
+            <button class="cfg-save-btn" onclick="saveContent()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Salvar conteúdo
+            </button>
+
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </main>
+</div>
+
+<!-- ACTION SHEET — config nudge -->
+<div class="asheet-ov" id="asheetOv" onclick="closeAsheet(event)">
+  <div class="asheet">
+    <div class="asheet-handle"></div>
+    <div class="asheet-ico" id="asheetIco">
+      <svg id="asheetSvg" viewBox="0 0 24 24"></svg>
+    </div>
+    <div class="asheet-title" id="asheetTitle"></div>
+    <div class="asheet-desc"  id="asheetDesc"></div>
+    <div class="asheet-acts">
+      <button class="asheet-cta" id="asheetCta" onclick="asheetGo()">
+        <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span id="asheetCtaLbl">Configurar agora</span>
+      </button>
+      <button class="asheet-dismiss" onclick="closeAsheet()">Agora não</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast">
@@ -1156,6 +1748,7 @@ let recordedMimeType = 'audio/webm';
    INIT
 ════════════════════════════════════ */
 window.onload = () => {
+  initTheme();
   const k  = ls('pq_key');
   const n  = ls('pq_name');
   const pr = ls('pq_provider') || 'gemini';
@@ -1168,12 +1761,20 @@ window.onload = () => {
   if(k){ $('apiKey').value = k; }
   const gbk = ls('pq_groq_backup_key'); if(gbk) $('groqBackupKey').value = gbk;
   if(n){ $('churchName').value = n; $('chSub').textContent = n; }
+  updateTitle();
 
   const saved = ls('pq_cats');
   cats = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_CATS));
   renderCats();
   buildIcoGrid();
   initAudioBtn();
+  // populate initial suggestions dynamically
+  const initSugs = $('initSugs');
+  if(initSugs) initSugs.innerHTML = buildDynamicSugs();
+  // update content stats badge
+  updateHeroStats();
+  // start onboarding on first access
+  setTimeout(()=> cmStart(false), 600);
 };
 
 /* ════════════════════════════════════
@@ -1235,6 +1836,11 @@ function updateModelDesc(){
 /* ════════════════════════════════════
    HELPERS
 ════════════════════════════════════ */
+function updateTitle(){
+  const n = ls('pq_name');
+  document.title = n ? n + ' — Secretária Paroquial 24h' : 'Secretária Paroquial 24h';
+}
+
 function $(x){ return document.getElementById(x); }
 function ls(k){ return localStorage.getItem(k)||''; }
 function now(){ return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
@@ -1249,13 +1855,82 @@ function closeSb(){
   $('ov').classList.remove('active');
   document.body.style.overflow='';
 }
-function sv(v){
+function sv(v, subTab){
   ['chat','settings'].forEach(x=>{
     $(x+'View').classList.toggle('active',x===v);
-    $('nav-'+x).classList.toggle('active',x===v);
   });
+  // update sidebar nav active state
+  $('nav-chat').classList.toggle('active', v==='chat');
+  $('nav-settings').classList.toggle('active', v==='settings' && (!subTab||subTab==='ia'));
+  $('nav-content').classList.toggle('active', v==='settings' && subTab==='content');
   closeSb();
   adjustForSettings(v);
+  if(v === 'settings'){
+    switchCfgTab(subTab || 'ia');
+  }
+}
+
+function switchCfgTab(tab){
+  const isIa = tab === 'ia';
+  $('cfgTabIa').classList.toggle('active', isIa);
+  $('cfgTabContent').classList.toggle('active', !isIa);
+  $('cfgPanelIa').classList.toggle('active', isIa);
+  $('cfgPanelContent').classList.toggle('active', !isIa);
+  if(!isIa){ updateHeroStats(); }
+}
+
+function updateHeroStats(){
+  const filled = cats.filter(c=>c.text.trim()).length;
+  const total  = cats.length;
+  const badge  = $('cfgContentBadge');
+  const tabBadge = $('cfgTabContent')?.querySelector('.cfg-tab-badge');
+  if(badge)    badge.textContent = filled > 0 ? filled : '';
+  if(tabBadge) tabBadge.textContent = filled > 0 ? filled+'/'+total : '';
+  const stats = $('heroStats');
+  if(!stats) return;
+  stats.innerHTML = cats.slice(0,6).map(c=>{
+    const ok = c.text.trim().length > 0;
+    return `<div class="cfg-stat"><div class="cfg-stat-dot${ok?' filled':''}"></div>${c.name}</div>`;
+  }).join('') + (cats.length > 6 ? `<div class="cfg-stat"><div class="cfg-stat-dot"></div>+${cats.length-6} mais</div>` : '');
+}
+
+function saveIa(){
+  const key   = $('apiKey').value.trim();
+  const model = $('modelSelect').value;
+  localStorage.setItem('pq_key',             key);
+  localStorage.setItem('pq_groq_backup_key', $('groqBackupKey')?.value?.trim()||'');
+  localStorage.setItem('pq_provider',        currentProvider);
+  localStorage.setItem('pq_model',           model);
+  localStorage.setItem('pq_name',            $('churchName').value.trim());
+  const n = $('churchName').value.trim();
+  if(n) $('chSub').textContent = n;
+  updateTitle();
+  showToast('Configurações de IA salvas');
+  if(key) testApiKey();
+}
+
+function saveContent(){
+  saveCurrentCatText();
+  localStorage.setItem('pq_cats', JSON.stringify(cats));
+  updateHeroStats();
+  renderCats();
+  showToast('Conteúdo salvo');
+}
+
+function toggleKeyVisibility(){
+  const inp  = $('apiKey');
+  const icon = $('eyeIcon');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  icon.innerHTML = show
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+// Keep saveAll as alias for backward compat
+function saveAll(){
+  saveIa();
+  saveContent();
 }
 
 function adjustForSettings(v){
@@ -1713,6 +2388,7 @@ function saveAll(){
   localStorage.setItem('pq_cats',     JSON.stringify(cats));
   const n = $('churchName').value.trim();
   if(n) $('chSub').textContent = n;
+  updateTitle();
   showToast('Configurações salvas');
   renderCats();
   if(key) testApiKey();
@@ -1727,27 +2403,61 @@ function buildContext(){
 ════════════════════════════════════ */
 function newChat(){
   hist = [];
+  const sugsHtml = buildDynamicSugs();
   $('msgs').innerHTML = `
     <div id="es" class="empty">
       <span class="e-cross">✝</span>
       <div class="e-title">Bem-vindo à Secretaria</div>
       <div class="e-sub">Estou aqui para responder suas dúvidas sobre nossa paróquia.</div>
-      <div class="sugs">
-        <button class="sug" onclick="useSug('Quais são os horários das missas?')"><span class="sug-ico">🕊</span>Horários das missas</button>
-        <button class="sug" onclick="useSug('Quando são as confissões?')"><span class="sug-ico">🙏</span>Confissões</button>
-        <button class="sug" onclick="useSug('Quais são os avisos desta semana?')"><span class="sug-ico">📋</span>Avisos da semana</button>
-        <button class="sug" onclick="useSug('Como entro em contato com a paróquia?')"><span class="sug-ico">📞</span>Contato</button>
-      </div>
+      <div class="sugs">${sugsHtml}</div>
     </div>`;
   sv('chat');
+}
+
+/* ── Build suggestions from filled categories ── */
+const CAT_QUESTION_MAP = {
+  missas:      { ico:'🕊', q:'Quais são os horários das missas?' },
+  confissoes:  { ico:'🙏', q:'Quando são as confissões?' },
+  batizados:   { ico:'💧', q:'Como agendar um batizado?' },
+  casamentos:  { ico:'💍', q:'Como agendar um casamento?' },
+  eucaristia:  { ico:'✝', q:'Como funciona a Primeira Comunhão?' },
+  catecismo:   { ico:'📖', q:'Como me inscrever no catecismo?' },
+  liturgia:    { ico:'🎵', q:'Como participar da liturgia?' },
+  grupooracao: { ico:'🤝', q:'Quando é o grupo de oração?' },
+  dizimo:      { ico:'🙌', q:'Como contribuir com o dízimo?' },
+  endereco:    { ico:'📍', q:'Qual é o endereço da paróquia?' },
+  secretaria:  { ico:'📞', q:'Como entro em contato com a secretaria?' },
+  avisos:      { ico:'📋', q:'Quais são os avisos desta semana?' },
+};
+
+function buildDynamicSugs(){
+  // prefer categories that already have text filled in
+  const filled = cats.filter(c => c.text.trim());
+  const pool = filled.length >= 4 ? filled : cats;
+  const pick = pool.slice(0, 4);
+  return pick.map(c => {
+    const map = CAT_QUESTION_MAP[c.id];
+    const ico = map ? map.ico : '✝';
+    const q   = map ? map.q   : `Informações sobre ${c.name}`;
+    return `<button class="sug" onclick="useSug('${q.replace(/'/g,"\\'")}')"><span class="sug-ico">${ico}</span>${c.name}</button>`;
+  }).join('');
 }
 function useSug(t){ $('chatInput').value=t; sendMsg(); }
 
 /* ── LINK PARSER ── */
 function parseLinks(text){
   let s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  s = s.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
-  s = s.replace(/(?<!["\/])(www\.[^\s]+)/g,'<a href="https://$1" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/(https?:\/\/[^\s]+)/g, m => {
+    // strip trailing punctuation that is not part of the URL
+    const clean = m.replace(/[.,!?;:)\]'"]+$/, '');
+    const tail  = m.slice(clean.length);
+    return `<a href="${clean}" target="_blank" rel="noopener">${clean}</a>${tail}`;
+  });
+  s = s.replace(/(?<!["\/])(www\.[^\s]+)/g, m => {
+    const clean = m.replace(/[.,!?;:)\]'"]+$/, '');
+    const tail  = m.slice(clean.length);
+    return `<a href="https://${clean}" target="_blank" rel="noopener">${clean}</a>${tail}`;
+  });
   s = s.replace(/@([A-Za-z0-9_.]+)/g,'<a href="https://instagram.com/$1" target="_blank" rel="noopener">@$1</a>');
   s = s.replace(/(\(?\d{2}\)?\s?[\d\s\-]{8,12}\d)/g, m=>{
     const digits = m.replace(/\D/g,'');
@@ -1769,12 +2479,15 @@ function addMsg(text, isUser){
   const sn = isUser ? 'Você' : (ls('pq_name')||'Assistente');
   const g = document.createElement('div');
   g.className = 'mg '+(isUser?'user':'bot');
+  const bubbleContent = isUser
+    ? parseLinks(text)
+    : (typeof marked !== 'undefined' ? marked.parse(parseLinks(text)) : parseLinks(text));
   g.innerHTML = `
     <div class="mm">
       <div class="av ${isUser?'usr':'bot'}">${isUser?'👤':'✝'}</div>
       <span class="sender">${sn}</span>
     </div>
-    <div class="bubble">${parseLinks(text)}</div>
+    <div class="bubble">${bubbleContent}</div>
     <div class="mt">${now()}</div>`;
   msgs.appendChild(g);
   msgs.scrollTop = msgs.scrollHeight;
@@ -1880,6 +2593,7 @@ function buildSystemPrompt(name, data){
   prompt += 'FORMATO:\n';
   prompt += '- Português do Brasil. Linguagem simples e acolhedora.\n';
   prompt += '- Máximo 3 parágrafos curtos e objetivos.\n';
+  prompt += '- Use Markdown quando for útil: **negrito** para destaque, listas com "-" para horários, etc.\n';
   prompt += '- Use emoji sutis (✝ 🙏) com muita moderação.\n';
   prompt += '- Telefones e links: escreva completos para ficarem clicáveis.\n\n';
 
@@ -1958,11 +2672,23 @@ async function doSend(text, isAudio){
   else addMsg(text, true);
 
   if(!apiKey){
-    addMsg('Acesse "Dados da Paróquia" no menu e insira sua chave de API para usar o assistente.',false);
+    showAsheet({
+      type:   'ia',
+      title:  'Chave de API não configurada',
+      desc:   'Para usar o assistente é preciso inserir sua chave de API. Leva menos de 1 minuto e é gratuito.',
+      cta:    'Ir para Configurações de IA',
+      target: 'ia'
+    });
     return;
   }
   if(!data){
-    addMsg('Ainda não há informações cadastradas. Acesse "Dados da Paróquia" e preencha as categorias.',false);
+    showAsheet({
+      type:   'content',
+      title:  'Paróquia ainda não configurada',
+      desc:   'Preencha pelo menos uma categoria com as informações da paróquia para o assistente poder responder.',
+      cta:    'Ir para Conteúdo da Paróquia',
+      target: 'content'
+    });
     return;
   }
 
@@ -2003,14 +2729,14 @@ async function doSend(text, isAudio){
               reply='⚠️ Limite do Gemini atingido e o backup também não respondeu. Tente novamente em alguns minutos.';
             }
           }catch(e){
-            reply='⚠️ Limite do Gemini atingido. Configure uma chave Groq de backup em "Dados da Paróquia".';
+            reply='⚠️ Limite do Gemini atingido. Configure uma chave Groq de backup em "Configurações de IA".';
           }
         } else {
-          reply='⚠️ Limite da API Gemini atingido. Aguarde alguns minutos ou configure uma chave Groq de backup em "Dados da Paróquia".';
+          reply='⚠️ Limite da API Gemini atingido. Aguarde alguns minutos ou configure uma chave Groq de backup em "Configurações de IA".';
         }
 
       } else if(j.error?.message?.includes('API key')||j.error?.message?.includes('INVALID')){
-        reply='✗ Chave Gemini inválida. Verifique em "Dados da Paróquia".';
+        reply='✗ Chave Gemini inválida. Verifique em "Configurações de IA".';
       } else if(j.error){
         reply='Erro Gemini: '+(j.error.message||'').substring(0,100);
       } else {
@@ -2025,7 +2751,7 @@ async function doSend(text, isAudio){
       } else if(isQuotaError(j,'groq')){
         reply='⚠️ Limite de requisições Groq atingido. Aguarde alguns segundos e tente novamente.';
       } else if(j.error?.message?.includes('invalid_api_key')){
-        reply='✗ Chave Groq inválida. Verifique em "Dados da Paróquia".';
+        reply='✗ Chave Groq inválida. Verifique em "Configurações de IA".';
       } else if(j.error){
         reply='Erro Groq: '+(j.error.message||'').substring(0,100);
       } else {
@@ -2237,7 +2963,16 @@ async function processAudio(){
   const provider = ls('pq_provider') || 'gemini';
   const groqBackupKey = ls('pq_groq_backup_key');
 
-  if(!apiKey){ addMsg('Insira sua chave de API em "Dados da Paróquia" para usar o áudio.',false); return; }
+  if(!apiKey){
+    showAsheet({
+      type:   'ia',
+      title:  'Chave de API não configurada',
+      desc:   'Para transcrever áudio é preciso inserir sua chave de API nas Configurações de IA.',
+      cta:    'Ir para Configurações de IA',
+      target: 'ia'
+    });
+    return;
+  }
   if(audioChunks.length === 0){ addMsg('Nenhum áudio gravado. Tente novamente.',false); return; }
 
   // Use the actual recorded mime type
@@ -2314,8 +3049,304 @@ function blobToB64(blob){
 }
 
 /* ════════════════════════════════════
-   MOBILE KEYBOARD / VIEWPORT FIXES
+   THEME TOGGLE
 ════════════════════════════════════ */
+function applyTheme(dark){
+  document.documentElement.classList.toggle('dark', dark);
+  document.documentElement.classList.toggle('light', !dark);
+  // sidebar toggle
+  const track = $('themeTrack');
+  const lbl   = $('themeLbl');
+  const icon  = $('themeIcon');
+  if(track) track.classList.toggle('on', dark);
+  if(lbl)   lbl.textContent = dark ? 'Tema escuro' : 'Tema claro';
+  if(icon)  icon.innerHTML  = dark
+    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  // topbar button icon
+  const tbBtn = $('tbThemeBtn');
+  if(tbBtn) tbBtn.querySelector('svg').innerHTML = dark
+    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+}
+
+function toggleTheme(){
+  const isDark = document.documentElement.classList.contains('dark')
+    || (!document.documentElement.classList.contains('light') && window.matchMedia('(prefers-color-scheme:dark)').matches);
+  const next = !isDark;
+  localStorage.setItem('pq_theme', next ? 'dark' : 'light');
+  applyTheme(next);
+}
+
+function initTheme(){
+  const saved = localStorage.getItem('pq_theme');
+  let dark;
+  if(saved === 'dark')  dark = true;
+  else if(saved === 'light') dark = false;
+  else dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  applyTheme(dark);
+}
+
+
+/* ════════════════════════════════════
+   ONBOARDING — COACH MARKS ENGINE
+════════════════════════════════════ */
+const CM_STEPS = [
+  {
+    id:      'welcome',
+    title:   'Bem-vindo à Secretária Paroquial! ✝',
+    desc:    'Este rápido tour vai te mostrar como configurar e usar o assistente. São menos de 2 minutos.',
+    target:  null,
+    nextLbl: 'Começar tour',
+  },
+  {
+    id:      'nav-settings',
+    title:   'Configurações de IA',
+    desc:    'Aqui você escolhe o provedor de inteligência artificial (Gemini ou Groq) e insere sua chave de API gratuita. Sem isso o assistente não funciona.',
+    target:  'nav-settings',
+    arrow:   'right',
+    nextLbl: 'Próximo',
+  },
+  {
+    id:      'nav-content',
+    title:   'Conteúdo da Paróquia',
+    desc:    'Cadastre as informações da sua paróquia aqui — horários de missa, confissões, endereço, avisos da semana e muito mais. Quanto mais completo, melhores as respostas.',
+    target:  'nav-content',
+    arrow:   'right',
+    nextLbl: 'Próximo',
+  },
+  {
+    id:      'inBox',
+    title:   'Faça sua pergunta',
+    desc:    'Digite aqui qualquer dúvida sobre a paróquia — horários, sacramentos, contato. O assistente responde com base no conteúdo que você cadastrou.',
+    target:  'inBox',
+    arrow:   'bottom',
+    nextLbl: 'Próximo',
+  },
+  {
+    id:      'audioBtn',
+    title:   'Envie por voz',
+    desc:    'No celular, segure este botão e fale sua pergunta. O áudio é transcrito automaticamente e enviado ao assistente.',
+    target:  'audioBtn',
+    arrow:   'bottom',
+    nextLbl: 'Próximo',
+  },
+  {
+    id:      'themeBtn',
+    title:   'Tema claro ou escuro',
+    desc:    'Alterne entre o tema claro e escuro conforme sua preferência. A escolha fica salva automaticamente.',
+    target:  'themeBtn',
+    arrow:   'left',
+    nextLbl: 'Concluir',
+  },
+];
+
+let _cmStep = 0;
+
+function cmStart(force){
+  const seen = localStorage.getItem('pq_onboard_done');
+  if(seen && !force) return;
+  // ensure we're on chat view so targets are visible
+  sv('chat');
+  closeSb();
+  _cmStep = 0;
+  cmRender();
+}
+
+function cmRender(){
+  const step = CM_STEPS[_cmStep];
+  const ov   = $('cmOv');
+  const card = $('cmCard');
+  const ring = $('cmRing');
+  const hole = $('cmHole');
+
+  // populate text
+  $('cmTitle').textContent   = step.title;
+  $('cmDesc').textContent    = step.desc;
+  $('cmNextLbl').textContent = step.nextLbl || 'Próximo';
+
+  // badge
+  $('cmBadge').innerHTML = `
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Passo ${_cmStep + 1} de ${CM_STEPS.length}`;
+
+  // dots
+  $('cmDots').innerHTML = CM_STEPS.map((_,i)=>
+    `<div class="cm-dot${i===_cmStep?' active':''}"></div>`
+  ).join('');
+
+  // arrow
+  const arrow = $('cmArrow');
+  arrow.className = 'cm-arrow';
+  if(step.arrow) arrow.classList.add(step.arrow);
+  arrow.style.display = step.target ? '' : 'none';
+
+  // welcome step: no spotlight
+  if(!step.target){
+    ov.className = 'cm-ov show cm-welcome';
+    ring.style.display  = 'none';
+    hole.setAttribute('width',  '0');
+    hole.setAttribute('height', '0');
+    // center arrow hidden already
+    // open sidebar for steps that highlight sidebar items
+    return;
+  }
+
+  ov.className = 'cm-ov show';
+  ring.style.display = '';
+
+  // highlight sidebar if target is a sidebar element
+  const sidebarTargets = ['nav-settings','nav-content','themeBtn'];
+  if(sidebarTargets.includes(step.id)){
+    openSb();
+  } else {
+    closeSb();
+  }
+
+  // wait for sidebar animation then position
+  setTimeout(()=> cmPosition(step), sidebarTargets.includes(step.id) ? 310 : 30);
+}
+
+function cmPosition(step){
+  const el = $(step.target);
+  if(!el) return;
+
+  const PAD   = 8;
+  const vw    = window.innerWidth;
+  const vh    = window.innerHeight;
+  const r     = el.getBoundingClientRect();
+  const card  = $('cmCard');
+  const ring  = $('cmRing');
+  const hole  = $('cmHole');
+  const arrow = $('cmArrow');
+
+  // spotlight hole
+  const hx = r.left - PAD;
+  const hy = r.top  - PAD;
+  const hw = r.width  + PAD*2;
+  const hh = r.height + PAD*2;
+
+  hole.setAttribute('x',      hx);
+  hole.setAttribute('y',      hy);
+  hole.setAttribute('width',  hw);
+  hole.setAttribute('height', hh);
+  hole.setAttribute('rx',     '10');
+
+  ring.style.top    = hy + 'px';
+  ring.style.left   = hx + 'px';
+  ring.style.width  = hw + 'px';
+  ring.style.height = hh + 'px';
+
+  // card dimensions (approximate before paint)
+  const cw = Math.min(320, vw - 32);
+  const ch = 200;
+  const CARD_MARGIN = 16;
+
+  let top, left, arrowStyle = {};
+
+  if(step.arrow === 'right'){
+    // card to the RIGHT of element
+    left = hx + hw + CARD_MARGIN;
+    top  = hy + hh/2 - ch/2;
+    // clamp
+    if(left + cw > vw - 8) left = hx - cw - CARD_MARGIN; // flip left
+    arrowStyle = { top: '50%', left: '-7px', transform:'translateY(-50%) rotate(45deg)', borderRight:'none', borderBottom:'none' };
+  } else if(step.arrow === 'left'){
+    left = hx - cw - CARD_MARGIN;
+    top  = hy + hh/2 - ch/2;
+    if(left < 8) left = hx + hw + CARD_MARGIN;
+    arrowStyle = { top: '50%', right: '-7px', left:'auto', transform:'translateY(-50%) rotate(45deg)', borderLeft:'none', borderTop:'none' };
+  } else if(step.arrow === 'bottom'){
+    // card ABOVE element
+    top  = hy - ch - CARD_MARGIN;
+    left = hx + hw/2 - cw/2;
+    if(top < 8) top = hy + hh + CARD_MARGIN; // flip below
+    arrowStyle = { bottom:'-7px', top:'auto', left: cw/2 - 7 + 'px', transform:'rotate(45deg)', borderTop:'none', borderLeft:'none' };
+  } else {
+    top  = hy + hh + CARD_MARGIN;
+    left = hx + hw/2 - cw/2;
+    arrowStyle = { top:'-7px', left: cw/2 - 7 + 'px', transform:'rotate(45deg)', borderBottom:'none', borderRight:'none' };
+  }
+
+  // clamp within viewport
+  top  = Math.max(8, Math.min(top,  vh - ch - 8));
+  left = Math.max(8, Math.min(left, vw - cw - 8));
+
+  card.style.top     = top  + 'px';
+  card.style.left    = left + 'px';
+  card.style.width   = cw   + 'px';
+  card.style.position= 'fixed';
+
+  // apply arrow style
+  Object.assign(arrow.style, {top:'', left:'', right:'', bottom:'', transform:''});
+  Object.assign(arrow.style, arrowStyle);
+}
+
+function cmNext(){
+  _cmStep++;
+  if(_cmStep >= CM_STEPS.length){
+    cmEnd();
+  } else {
+    cmRender();
+  }
+}
+
+function cmSkip(){ cmEnd(); }
+
+function cmEnd(){
+  $('cmOv').classList.remove('show');
+  localStorage.setItem('pq_onboard_done','1');
+  closeSb();
+  // if first time and no key set, open IA settings
+  if(!ls('pq_key')){
+    setTimeout(()=> sv('settings','ia'), 350);
+  }
+}
+
+// reposition on resize
+window.addEventListener('resize', ()=>{
+  if(!$('cmOv').classList.contains('show')) return;
+  const step = CM_STEPS[_cmStep];
+  if(step && step.target) cmPosition(step);
+});
+
+
+let _asheetTarget = null;
+
+function showAsheet({ type, title, desc, cta, target }){
+  _asheetTarget = target;
+  const ico = $('asheetIco');
+  const svg = $('asheetSvg');
+  $('asheetTitle').textContent  = title;
+  $('asheetDesc').textContent   = desc;
+  $('asheetCtaLbl').textContent = cta || 'Configurar agora';
+  if(type === 'ia'){
+    ico.className = 'asheet-ico ia';
+    svg.innerHTML = '<rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 11V7"/><circle cx="12" cy="5" r="2"/><path d="M8 15h.01M12 15h.01M16 15h.01"/><path d="M7 11V9a5 5 0 0110 0v2"/>';
+  } else {
+    ico.className = 'asheet-ico content';
+    svg.innerHTML = '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>';
+  }
+  $('asheetOv').classList.add('show');
+  setTimeout(()=>{ const b=$('asheetCta'); if(b) b.focus(); }, 60);
+}
+
+function closeAsheet(e){
+  if(e && e.target !== $('asheetOv')) return;
+  $('asheetOv').classList.remove('show');
+  _asheetTarget = null;
+}
+
+function asheetGo(){
+  $('asheetOv').classList.remove('show');
+  if(_asheetTarget) sv('settings', _asheetTarget);
+  _asheetTarget = null;
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') $('asheetOv').classList.remove('show');
+});
+
 if(window.visualViewport){
   let ticking=false;
   function onVPResize(){

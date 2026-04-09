@@ -750,16 +750,18 @@ textarea.fi{resize:vertical;line-height:1.7;}
 
 /* img-based icon buttons (online results) */
 .ico-opt-img{
-  width:44px;height:44px;border-radius:10px;
+  width:56px;min-height:60px;border-radius:10px;
   border:1.5px solid var(--border);background:var(--bg);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:6px 3px 5px;gap:3px;
   -webkit-tap-highlight-color:transparent;transition:all .14s;
   overflow:hidden;
 }
-.ico-opt-img img{width:22px;height:22px;object-fit:contain;opacity:.75;}
+.ico-opt-img img{width:22px;height:22px;object-fit:contain;opacity:.8;flex-shrink:0;}
 .ico-opt-img:active{border-color:var(--brand-soft);background:var(--brand-pale);}
 .ico-opt-img.sel{border-color:var(--brand);background:var(--brand-pale);}
-.ico-opt-img.sel img{opacity:1;filter:none;}
+.ico-opt-img.sel img{opacity:1;}
 
 </style>
 </head>
@@ -1425,82 +1427,152 @@ function quickSearch(term){
   doIconSearch();
 }
 
-async function doIconSearch(){
-  const query = ($('icoSearch').value || '').trim();
-  const state  = $('icoSearchState');
-  const grid   = $('icoGridOnline');
-  const hint   = $('icoOnlineHint');
+/* ─────────────────────────────────────────────────
+   ICON SEARCH — zero fetch, works on file:// too.
+   Local index of icon names → <img> from Iconify CDN.
+   Images load cross-origin freely, no fetch/CORS needed.
+───────────────────────────────────────────────── */
+const ICO_INDEX = {
+  lucide: [
+    'church','cross','star','heart','flame','sun','moon','droplets','wheat',
+    'book-open','book','scroll-text','pen','pencil','feather',
+    'users','user','user-plus','baby','shield','shield-check',
+    'phone','mail','map-pin','globe','home',
+    'bell','bell-ring','megaphone','calendar','clock','alarm-clock',
+    'music','music2','mic','headphones','bookmark','clipboard-list',
+    'file-text','info','help-circle','check-circle','award',
+    'gift','heart-handshake','hand-heart','helping-hand','hand-coins',
+    'building','building2','landmark','castle',
+    'dove','leaf','tree-pine','flower','coins','wallet','piggy-bank',
+    'smile','sparkles','zap','cloud','sun-medium'
+  ],
+  ph: [
+    'church','cross','crown','star','heart','flame','sun','moon','drop',
+    'book-open','books','scroll','pen','pencil-simple',
+    'users','user','baby','shield',
+    'phone','envelope','map-pin','globe','house',
+    'bell','megaphone','calendar','clock',
+    'music-note','microphone','headphones','speaker-high',
+    'bookmark','file-text','info','question',
+    'gift','hands','hand-heart','handshake',
+    'building','bank','mosque','dove',
+    'leaf','tree','flower','coins','wallet','hand-coins',
+    'smiley','sparkle','lightning'
+  ],
+  tabler: [
+    'building-church','cross','star','heart','flame','sun','moon','droplet',
+    'book','book-2','pencil','users','user','shield',
+    'phone','mail','map-pin','globe','home',
+    'bell','speakerphone','calendar','clock',
+    'music','microphone','headphones',
+    'bookmark','notes','info-circle',
+    'gift','heart-handshake',
+    'building','landmark','castle',
+    'leaf','tree','flower','coin','wallet'
+  ],
+  mdi: [
+    'church','star','heart','fire','white-balance-sunny','moon',
+    'water','book-open-variant','book','pen','pencil',
+    'account-group','account','shield',
+    'phone','email','map-marker','earth','home',
+    'bell','bullhorn','calendar','clock',
+    'music','microphone','headphones',
+    'bookmark','clipboard-text','information',
+    'gift','hand-heart','handshake',
+    'office-building','bank','castle',
+    'leaf','tree','flower','cash','wallet'
+  ]
+};
+
+function makeIcoImgBtn(coll, name){
+  var id  = coll+':'+name;
+  var btn = document.createElement('button');
+  btn.className = 'ico-opt-img'+(id===selectedIco?' sel':'');
+  btn.dataset.ico = id;
+  btn.type  = 'button';
+  btn.title = name.replace(/-/g,' ');
+
+  var img   = document.createElement('img');
+  img.src   = 'https://api.iconify.design/'+coll+'/'+name+'.svg?color=%237B5E3A&width=22&height=22';
+  img.alt   = name;
+  img.width = 22; img.height = 22;
+  img.onerror = function(){ btn.style.display='none'; };
+  btn.appendChild(img);
+
+  var label = document.createElement('div');
+  label.textContent = name.replace(/-/g,' ');
+  label.style.cssText='font-size:9px;color:var(--text-3);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:54px;margin-top:2px;';
+  btn.appendChild(label);
+
+  btn.onclick = function(){
+    selectedIco = id;
+    if(!ICONS[id]){
+      fetch('https://api.iconify.design/'+coll+'/'+name+'.svg?width=20&height=20')
+        .then(function(r){return r.text();})
+        .then(function(svg){
+          if(svg&&svg.length>10){
+            ICONS[id]=svg.replace(/fill="(?!none)[^"]*"/g,'fill="currentColor"')
+                         .replace(/stroke="(?!none)[^"]*"/g,'stroke="currentColor"');
+          }
+        }).catch(function(){});
+    }
+    document.querySelectorAll('.ico-opt-img,.ico-opt').forEach(function(b){
+      b.classList.toggle('sel', b.dataset.ico===id);
+    });
+  };
+  return btn;
+}
+
+function doIconSearch(){
+  var raw   = $('icoSearch') ? $('icoSearch').value : '';
+  var query = raw.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+  var state = $('icoSearchState');
+  var grid  = $('icoGridOnline');
+  var hint  = $('icoOnlineHint');
 
   if(!query){
-    if(state){ state.style.display='flex'; state.querySelector('span').textContent='Digite um termo e clique em buscar'; }
-    if(grid)  grid.style.display = 'none';
-    if(hint)  hint.style.display = 'none';
+    state.style.display='flex';
+    state.querySelector('span').textContent='Digite um termo acima';
+    grid.style.display='none'; grid.innerHTML='';
+    hint.style.display='none';
     return;
   }
 
-  // Show loading
-  if(state){ state.style.display='flex'; state.querySelector('span').textContent='Buscando "'+query+'"...'; }
-  if(grid)  { grid.style.display='none'; grid.innerHTML=''; }
-  if(hint)  hint.style.display='none';
+  grid.innerHTML=''; grid.style.display='none';
+  state.style.display='flex';
+  state.querySelector('span').textContent='Procurando...';
+  hint.style.display='none';
 
-  try{
-    // Iconify search — returns JSON list of icon IDs
-    const url = 'https://api.iconify.design/search?query='+encodeURIComponent(query)
-              + '&limit=40&prefix=lucide,mdi,ph,tabler,material-symbols,heroicons';
-    const res  = await fetch(url);
-    if(!res.ok) throw new Error('status '+res.status);
-    const data = await res.json();
-
-    if(!data.icons || data.icons.length === 0){
-      if(state){ state.style.display='flex'; state.querySelector('span').textContent='Sem resultados para "'+query+'". Tente outro termo.'; }
-      return;
-    }
-
-    if(state) state.style.display='none';
-    if(grid)  grid.style.display='flex';
-    if(hint){ hint.style.display='block'; hint.textContent=data.icons.length+' ícones encontrados'; }
-
-    const icons = data.icons.slice(0,40);
-    icons.forEach(id => {
-      const btn = document.createElement('button');
-      btn.className = 'ico-opt-img' + (id===selectedIco?' sel':'');
-      btn.dataset.ico = id;
-      btn.type  = 'button';
-      btn.title = id.indexOf(':')>-1 ? id.split(':').pop() : id;
-
-      // Use Iconify as <img> src — works from file:// with no CORS issues
-      const parts = id.indexOf(':')>-1 ? id.split(':') : [id.split('-')[0], id];
-      // Use themed URL: dark color that matches our palette
-      const imgUrl = 'https://api.iconify.design/'+parts[0]+'/'+parts[1]+'.svg?color=%237B5E3A&width=22&height=22';
-      const img = document.createElement('img');
-      img.src = imgUrl;
-      img.alt = btn.title;
-      img.onerror = function(){ btn.style.display='none'; }; // hide broken
-      btn.appendChild(img);
-
-      btn.onclick = function(){
-        selectedIco = id;
-        // Store themed SVG for reuse in pill buttons
-        fetch('https://api.iconify.design/'+parts[0]+'/'+parts[1]+'.svg?width=20&height=20')
-          .then(r=>r.text()).then(svg=>{
-            if(svg && svg.length>10){
-              const themed = svg.replace(/fill="(?!none)[^"]*"/g,'fill="currentColor"')
-                                .replace(/stroke="(?!none)[^"]*"/g,'stroke="currentColor"');
-              ICONS[id] = themed;
-            }
-          }).catch(()=>{});
-        document.querySelectorAll('.ico-opt-img,.ico-opt').forEach(b=>
-          b.classList.toggle('sel', b.dataset.ico===id)
-        );
-      };
-      grid.appendChild(btn);
+  var results=[];
+  ['lucide','ph','tabler','mdi'].forEach(function(coll){
+    (ICO_INDEX[coll]||[]).forEach(function(name){
+      var n = name.toLowerCase();
+      if(n===query || n.indexOf(query)>-1 || query.indexOf(n.replace(/-/g,''))>-1){
+        results.push({coll:coll,name:name});
+      }
     });
+  });
 
-  }catch(err){
-    if(state){ state.style.display='flex'; state.querySelector('span').textContent='Sem conexão com a internet. Verifique e tente novamente.'; }
+  if(results.length===0){
+    state.querySelector('span').textContent='Sem resultados para "'+query+'". Tente: church, heart, star, cross, book, bell, home...';
+    return;
   }
+
+  state.style.display='none';
+  grid.style.display='flex';
+  hint.style.display='block';
+  hint.textContent=results.length+' ícones encontrados';
+
+  results.slice(0,48).forEach(function(r){
+    grid.appendChild(makeIcoImgBtn(r.coll,r.name));
+  });
 }
 
+function quickSearch(term){
+  $('icoSearch').value=term;
+  doIconSearch();
+}
+function searchIcons(){}
 // Keep old name for backward compat
 function searchIcons(){ }
 

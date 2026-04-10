@@ -1157,6 +1157,13 @@ textarea.fi{resize:vertical;line-height:1.7;}
   border-radius:var(--r-xl);
   box-shadow:0 8px 32px rgba(0,0,0,.35);
   padding:18px 18px 14px;
+  box-sizing:border-box;
+}
+@media(max-width:639px){
+  #cmCard{
+    width:calc(100vw - 32px) !important;
+    border-radius:var(--r-xl);
+  }
 }
 /* Welcome step: centered, no spot */
 #cmCard.cm-center{
@@ -3224,47 +3231,82 @@ function initTheme(){
     var target = el(s.target);
     if(!target) return;
 
+    var r  = target.getBoundingClientRect();
+    var vh = window.innerHeight;
+
+    // if element is below or above the visible area, scroll it into view first
+    // then re-call position after scroll settles
+    if(r.bottom > vh || r.top < 0){
+      target.scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(function(){ position(s); }, 420);
+      return;
+    }
+
     var spot = el('cmSpot');
     var card = el('cmCard');
     var arr  = el('cmArrow');
     var PAD  = 8;
-    var r    = target.getBoundingClientRect();
+    r = target.getBoundingClientRect(); // re-read after potential scroll
     var vw   = window.innerWidth;
-    var vh   = window.innerHeight;
+    vh = window.innerHeight;
+    var isMobile = vw < 640;
 
-    // if element not visible (zero size), just center card
+    // invisible element — just center
     if(r.width === 0 || r.height === 0){
-      card.style.top  = '50%';
-      card.style.left = '50%';
-      card.style.transform = 'translate(-50%,-50%)';
+      card.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:' + Math.min(300, vw-32) + 'px;';
       spot.style.display = 'none';
       arr.className = '';
       return;
     }
 
-    // position spot
+    // spotlight
     spot.style.display = 'block';
     spot.style.top    = (r.top  - PAD) + 'px';
     spot.style.left   = (r.left - PAD) + 'px';
     spot.style.width  = (r.width  + PAD*2) + 'px';
     spot.style.height = (r.height + PAD*2) + 'px';
 
-    // position card
-    var cw   = Math.min(300, vw - 32);
-    var ch   = 180; // estimated
-    var GAP  = 14;
-    var sx   = r.left - PAD;
-    var sy   = r.top  - PAD;
-    var sw   = r.width  + PAD*2;
-    var sh   = r.height + PAD*2;
-    var top, left;
+    var cw  = Math.min(300, vw - 32);
+    var GAP = 12;
+    var sx  = r.left - PAD;
+    var sy  = r.top  - PAD;
+    var sw  = r.width  + PAD*2;
+    var sh  = r.height + PAD*2;
 
     card.style.transform = '';
-    card.style.width = cw + 'px';
+    card.style.width     = cw + 'px';
+    card.style.maxHeight = '';
+
+    // ── MOBILE: always fixed bottom bar, never overlaps element ──
+    if(isMobile){
+      arr.className = '';  // no arrow on mobile — position is obvious
+      var BOTTOM_PAD = 16;
+      // place card at bottom of screen
+      card.style.position = 'fixed';
+      card.style.left     = Math.round((vw - cw) / 2) + 'px';
+      card.style.top      = '';
+      card.style.bottom   = BOTTOM_PAD + 'px';
+      // if spotlight is in the bottom half, move card to top instead
+      var spotCenterY = sy + sh / 2;
+      if(spotCenterY > vh * 0.5){
+        card.style.bottom = '';
+        card.style.top    = BOTTOM_PAD + 'px';
+      }
+      return;
+    }
+
+    // ── DESKTOP: smart positioning beside / above / below ──
+    // measure real card height after layout
+    card.style.visibility = 'hidden';
+    card.style.top  = '0';
+    card.style.left = '0';
+    var ch = card.offsetHeight || 200;
+    card.style.visibility = '';
 
     var a = s.arrow;
+    var top, left;
+
     if(a === 'l'){
-      // card to the RIGHT of target
       left = sx + sw + GAP;
       top  = sy + sh/2 - ch/2;
       if(left + cw > vw - 8){ left = sx - cw - GAP; a = 'r'; }
@@ -3273,25 +3315,27 @@ function initTheme(){
       top  = sy + sh/2 - ch/2;
       if(left < 8){ left = sx + sw + GAP; a = 'l'; }
     } else if(a === 'b'){
-      // card ABOVE target
+      // prefer above
       top  = sy - ch - GAP;
       left = sx + sw/2 - cw/2;
       if(top < 8){ top = sy + sh + GAP; a = 't'; }
     } else {
       top  = sy + sh + GAP;
       left = sx + sw/2 - cw/2;
+      if(top + ch > vh - 8){ top = sy - ch - GAP; a = 'b'; }
     }
 
     // clamp
     top  = Math.max(8, Math.min(top,  vh - ch - 8));
     left = Math.max(8, Math.min(left, vw - cw - 8));
 
-    card.style.top  = top  + 'px';
-    card.style.left = left + 'px';
+    card.style.position = 'fixed';
+    card.style.top      = top  + 'px';
+    card.style.left     = left + 'px';
+    card.style.bottom   = '';
 
     // arrow
     arr.className = 'show ' + a;
-    // center arrow on the correct edge
     if(a === 'l' || a === 'r'){
       arr.style.top    = Math.min(Math.max(r.top + r.height/2 - top - 6, 12), ch - 24) + 'px';
       arr.style.left   = '';

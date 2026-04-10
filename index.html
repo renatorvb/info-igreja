@@ -1118,9 +1118,147 @@ textarea.fi{resize:vertical;line-height:1.7;}
 .ico-opt-img.sel{border-color:var(--brand);background:var(--brand-pale);}
 .ico-opt-img.sel img{opacity:1;}
 
+
+/* ════════════════════════════════════
+   ONBOARDING — COACH MARKS
+════════════════════════════════════ */
+#cmOv{
+  display:none;
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,.45);
+}
+#cmOv.cm-on{ display:block; }
+
+/* The spotlight cut-out: a div absolutely placed over the target,
+   transparent with a glowing border — no SVG, no mask */
+#cmSpot{
+  position:fixed;
+  border:2px solid var(--brand);
+  border-radius:12px;
+  box-shadow:0 0 0 9999px rgba(0,0,0,.45),
+             0 0 0 4px rgba(196,149,106,.25),
+             0 0 20px rgba(196,149,106,.2);
+  pointer-events:none;
+  transition:top .3s,left .3s,width .3s,height .3s;
+  animation:cm-glow 2s ease infinite;
+}
+@keyframes cm-glow{
+  0%,100%{box-shadow:0 0 0 9999px rgba(0,0,0,.45),0 0 0 4px rgba(196,149,106,.22);}
+  50%    {box-shadow:0 0 0 9999px rgba(0,0,0,.45),0 0 0 7px rgba(196,149,106,.12);}
+}
+
+/* Tooltip card */
+#cmCard{
+  position:fixed;
+  width:300px;
+  max-width:calc(100vw - 32px);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  box-shadow:0 8px 32px rgba(0,0,0,.35);
+  padding:18px 18px 14px;
+}
+/* Welcome step: centered, no spot */
+#cmCard.cm-center{
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%,-50%);
+  width:min(340px,calc(100vw - 40px));
+  text-align:center;
+}
+.cm-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--brand-pale);border-radius:20px;
+  padding:3px 10px 3px 8px;font-size:11px;font-weight:500;
+  color:var(--brand);margin-bottom:10px;
+}
+.cm-badge svg{width:12px;height:12px;stroke:var(--brand);fill:none;stroke-width:2;}
+#cmTitle{
+  font-family:var(--fd);font-size:16px;font-weight:600;
+  color:var(--text-1);line-height:1.3;margin-bottom:6px;
+}
+#cmDesc{
+  font-size:13px;color:var(--text-2);line-height:1.65;
+  font-weight:300;margin-bottom:14px;
+}
+.cm-foot{
+  display:flex;align-items:center;gap:8px;
+}
+.cm-foot-skip{
+  font-size:12px;color:var(--text-3);cursor:pointer;
+  background:none;border:none;font-family:var(--fb);
+  padding:4px 0;flex-shrink:0;
+}
+.cm-foot-skip:hover{color:var(--text-2);}
+#cmDots{
+  display:flex;gap:4px;align-items:center;flex:1;justify-content:center;
+}
+.cm-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--border2);transition:all .2s;
+}
+.cm-dot.on{background:var(--brand);width:16px;border-radius:3px;}
+#cmBtn{
+  display:flex;align-items:center;gap:5px;
+  padding:8px 16px;border-radius:var(--r-md);
+  background:var(--user-bg);color:var(--user-fg);
+  border:none;font-family:var(--fb);font-size:13px;font-weight:500;
+  cursor:pointer;flex-shrink:0;min-height:36px;
+  -webkit-tap-highlight-color:transparent;
+}
+#cmBtn:active{background:var(--user-bg-hover);}
+#cmBtn svg{width:12px;height:12px;stroke:var(--user-fg);fill:none;stroke-width:2.5;}
+/* welcome btn full-width */
+#cmCard.cm-center .cm-foot{flex-direction:column;}
+#cmCard.cm-center #cmBtn{width:100%;justify-content:center;padding:12px;}
+#cmCard.cm-center .cm-foot-skip{padding:4px;}
+/* arrow notch */
+#cmArrow{
+  display:none;
+  position:absolute;
+  width:12px;height:12px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  transform:rotate(45deg);
+}
+#cmArrow.show{display:block;}
+#cmArrow.t{top:-6px;  border-bottom:none;border-right:none;}
+#cmArrow.b{bottom:-6px;border-top:none;  border-left:none;}
+#cmArrow.l{left:-6px; border-right:none; border-bottom:none;}
+#cmArrow.r{right:-6px;border-left:none;  border-top:none;}
+/* Welcome icon */
+.cm-wico{
+  width:56px;height:56px;border-radius:16px;
+  background:linear-gradient(145deg,var(--brand),#4A3018);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin:0 auto 14px;
+  box-shadow:var(--sh-md);
+}
 </style>
 </head>
 <body>
+
+<!-- ══ ONBOARDING ══ -->
+<div id="cmOv">
+  <div id="cmSpot"></div>
+  <div id="cmCard">
+    <div id="cmArrow"></div>
+    <div class="cm-badge" id="cmBadge">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="cmBadgeTxt"></span>
+    </div>
+    <div id="cmTitle"></div>
+    <div id="cmDesc"></div>
+    <div class="cm-foot">
+      <button class="cm-foot-skip" onclick="cmSkip()">Pular</button>
+      <div id="cmDots"></div>
+      <button id="cmBtn" onclick="cmNext()">
+        <span id="cmBtnLbl">Próximo</span>
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
 
 <div class="ov" id="ov" onclick="closeSb()"></div>
 
@@ -1221,7 +1359,11 @@ textarea.fi{resize:vertical;line-height:1.7;}
         </span>
         <div class="theme-toggle-track" id="themeTrack"><div class="theme-toggle-thumb"></div></div>
       </button>
-    </div>
+      <button class="nav-btn" onclick="cmStart(true);closeSb();" style="color:var(--brand);">
+        <svg viewBox="0 0 24 24" style="opacity:1;stroke:var(--brand);fill:none;stroke-width:1.8;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Rever tour
+      </button>
+
     <div class="sb-foot">
       <div class="s-row">
         <div class="s-dot" id="sDot"></div>
@@ -1458,7 +1600,7 @@ textarea.fi{resize:vertical;line-height:1.7;}
             </div>
 
             <!-- Save content button -->
-            <button class="cfg-save-btn" onclick="saveContent()">
+            <button class="cfg-save-btn" id="saveContentBtn" onclick="saveContent()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
               Salvar conteúdo
             </button>
@@ -1631,6 +1773,8 @@ window.onload = () => {
   if(initSugs) initSugs.innerHTML = buildDynamicSugs();
   // update content stats badge
   updateHeroStats();
+  // onboarding — first access only
+  setTimeout(function(){ cmStart(false); }, 700);
 };
 
 /* ════════════════════════════════════
@@ -2944,9 +3088,253 @@ function initTheme(){
 }
 
 
+
+
 /* ════════════════════════════════════
-   ACTION SHEET — config nudge
+   ONBOARDING — COACH MARKS
 ════════════════════════════════════ */
+(function(){
+  var STEPS = [
+    {
+      target: null,
+      title:  'Bem-vindo à Secretária Paroquial! ✝',
+      desc:   'Este tour rápido mostra como configurar e usar o assistente. Leva menos de 2 minutos.',
+      btn:    'Iniciar tour',
+      welcome: true,
+    },
+    {
+      target: 'nav-settings',
+      title:  'Configurações de IA',
+      desc:   'Aqui você escolhe o provedor (Gemini ou Groq) e insere sua chave de API gratuita. Sem isso o assistente não responde.',
+      btn:    'Próximo',
+      side:   true,
+      arrow:  'l',
+    },
+    {
+      target: 'nav-content',
+      title:  'Conteúdo da Paróquia',
+      desc:   'Cadastre os horários de missa, confissões, endereço, avisos e muito mais. Quanto mais completo, melhores as respostas.',
+      btn:    'Próximo',
+      side:   true,
+      arrow:  'l',
+    },
+    {
+      target: 'catBody',
+      title:  'Escreva por categoria',
+      desc:   'Clique em uma categoria (Missas, Confissões...) e escreva as informações no campo de texto. Use linguagem clara — o assistente vai usar exatamente o que você escrever aqui.',
+      btn:    'Próximo',
+      nav:    ['settings','content'],
+      arrow:  't',
+    },
+    {
+      target: 'saveContentBtn',
+      title:  'Salve o conteúdo',
+      desc:   'Depois de preencher as categorias, clique em "Salvar conteúdo". Só após salvar o assistente passa a usar as informações.',
+      btn:    'Próximo',
+      nav:    ['settings','content'],
+      arrow:  't',
+    },
+    {
+      target: 'inBox',
+      title:  'Faça sua pergunta',
+      desc:   'Digite aqui qualquer dúvida sobre a paróquia. O assistente responde com base no conteúdo cadastrado.',
+      btn:    'Próximo',
+      nav:    ['chat'],
+      arrow:  'b',
+    },
+    {
+      target: 'audioBtn',
+      title:  'Envie por voz',
+      desc:   'No celular, segure este botão e fale sua pergunta. O áudio é transcrito e enviado automaticamente.',
+      btn:    'Próximo',
+      arrow:  'b',
+    },
+    {
+      target: 'themeBtn',
+      title:  'Tema claro ou escuro',
+      desc:   'Alterne o tema conforme sua preferência. A escolha fica salva automaticamente.',
+      btn:    'Concluir',
+      side:   true,
+      arrow:  'l',
+    },
+  ];
+
+  var cur = 0;
+
+  function el(id){ return document.getElementById(id); }
+
+  function show(){
+    var ov = el('cmOv');
+    if(!ov) return;
+    ov.classList.add('cm-on');
+    render();
+  }
+
+  function render(){
+    var s    = STEPS[cur];
+    var card = el('cmCard');
+    var spot = el('cmSpot');
+    var arr  = el('cmArrow');
+
+    el('cmTitle').textContent   = s.title;
+    el('cmDesc').textContent    = s.desc;
+    el('cmBtnLbl').textContent  = s.btn || 'Próximo';
+    el('cmBadgeTxt').textContent = 'Passo ' + (cur + 1) + ' de ' + STEPS.length;
+
+    // dots
+    el('cmDots').innerHTML = STEPS.map(function(_,i){
+      return '<div class="cm-dot' + (i===cur ? ' on' : '') + '"></div>';
+    }).join('');
+
+    // welcome: centered, no spot
+    if(s.welcome){
+      card.className = 'cm-center';
+      spot.style.display = 'none';
+      arr.className = '';
+      // add welcome icon if not there
+      if(!el('cmWico')){
+        var ico = document.createElement('div');
+        ico.className = 'cm-wico'; ico.id = 'cmWico'; ico.textContent = '✝';
+        card.insertBefore(ico, card.firstChild);
+      }
+      return;
+    }
+
+    // remove welcome icon
+    var wico = el('cmWico');
+    if(wico) wico.remove();
+    card.className = '';
+
+    // navigate to a specific view/tab if needed
+    if(s.nav){
+      closeSb();
+      sv(s.nav[0], s.nav[1]);
+      setTimeout(function(){ position(s); }, 350);
+      return;
+    }
+
+    // open/close sidebar
+    if(s.side){ openSb(); } else { closeSb(); }
+
+    // wait for sidebar animation
+    setTimeout(function(){ position(s); }, s.side ? 320 : 20);
+  }
+
+  function position(s){
+    var target = el(s.target);
+    if(!target) return;
+
+    var spot = el('cmSpot');
+    var card = el('cmCard');
+    var arr  = el('cmArrow');
+    var PAD  = 8;
+    var r    = target.getBoundingClientRect();
+    var vw   = window.innerWidth;
+    var vh   = window.innerHeight;
+
+    // if element not visible (zero size), just center card
+    if(r.width === 0 || r.height === 0){
+      card.style.top  = '50%';
+      card.style.left = '50%';
+      card.style.transform = 'translate(-50%,-50%)';
+      spot.style.display = 'none';
+      arr.className = '';
+      return;
+    }
+
+    // position spot
+    spot.style.display = 'block';
+    spot.style.top    = (r.top  - PAD) + 'px';
+    spot.style.left   = (r.left - PAD) + 'px';
+    spot.style.width  = (r.width  + PAD*2) + 'px';
+    spot.style.height = (r.height + PAD*2) + 'px';
+
+    // position card
+    var cw   = Math.min(300, vw - 32);
+    var ch   = 180; // estimated
+    var GAP  = 14;
+    var sx   = r.left - PAD;
+    var sy   = r.top  - PAD;
+    var sw   = r.width  + PAD*2;
+    var sh   = r.height + PAD*2;
+    var top, left;
+
+    card.style.transform = '';
+    card.style.width = cw + 'px';
+
+    var a = s.arrow;
+    if(a === 'l'){
+      // card to the RIGHT of target
+      left = sx + sw + GAP;
+      top  = sy + sh/2 - ch/2;
+      if(left + cw > vw - 8){ left = sx - cw - GAP; a = 'r'; }
+    } else if(a === 'r'){
+      left = sx - cw - GAP;
+      top  = sy + sh/2 - ch/2;
+      if(left < 8){ left = sx + sw + GAP; a = 'l'; }
+    } else if(a === 'b'){
+      // card ABOVE target
+      top  = sy - ch - GAP;
+      left = sx + sw/2 - cw/2;
+      if(top < 8){ top = sy + sh + GAP; a = 't'; }
+    } else {
+      top  = sy + sh + GAP;
+      left = sx + sw/2 - cw/2;
+    }
+
+    // clamp
+    top  = Math.max(8, Math.min(top,  vh - ch - 8));
+    left = Math.max(8, Math.min(left, vw - cw - 8));
+
+    card.style.top  = top  + 'px';
+    card.style.left = left + 'px';
+
+    // arrow
+    arr.className = 'show ' + a;
+    // center arrow on the correct edge
+    if(a === 'l' || a === 'r'){
+      arr.style.top    = Math.min(Math.max(r.top + r.height/2 - top - 6, 12), ch - 24) + 'px';
+      arr.style.left   = '';
+      arr.style.bottom = '';
+    } else {
+      arr.style.left   = Math.min(Math.max(r.left + r.width/2 - left - 6, 12), cw - 24) + 'px';
+      arr.style.top    = '';
+      arr.style.bottom = '';
+    }
+  }
+
+  window.cmNext = function(){
+    cur++;
+    if(cur >= STEPS.length){ cmEnd(); return; }
+    render();
+  };
+
+  window.cmSkip = function(){ cmEnd(); };
+
+  window.cmEnd = function(){
+    var ov = el('cmOv');
+    if(ov) ov.classList.remove('cm-on');
+    localStorage.setItem('pq_onboard_done','1');
+    closeSb();
+    if(!localStorage.getItem('pq_key')){
+      setTimeout(function(){ sv('settings','ia'); }, 350);
+    }
+  };
+
+  window.cmStart = function(force){
+    if(!force && localStorage.getItem('pq_onboard_done')) return;
+    cur = 0;
+    show();
+  };
+
+  window.addEventListener('resize', function(){
+    if(!el('cmOv') || !el('cmOv').classList.contains('cm-on')) return;
+    var s = STEPS[cur];
+    if(s && s.target) position(s);
+  });
+
+})();
+
 let _asheetTarget = null;
 
 function showAsheet({ type, title, desc, cta, target }){

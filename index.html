@@ -218,6 +218,151 @@ body{
   border-radius:4px var(--r-xl) var(--r-xl) var(--r-xl);
   color:var(--text-1);box-shadow:var(--sh-sm);
 }
+/* ════════════════════════════════════
+   MASS SCHEDULE CARD
+════════════════════════════════════ */
+.mc-ov{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.6);
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.mc-ov.show{display:flex;}
+.mc-shell{
+  width:100%;max-width:400px;
+  display:flex;flex-direction:column;gap:12px;
+  max-height:90vh;
+}
+/* ── the printable card ── */
+.mc-card{
+  background:linear-gradient(160deg,#3D2B10 0%,#1E1208 100%);
+  border-radius:20px;
+  padding:28px 24px 22px;
+  color:#FFF8F0;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  position:relative;
+  overflow:hidden;
+}
+.mc-card::before{
+  content:'';position:absolute;
+  top:-60px;right:-60px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(196,149,106,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.mc-card::after{
+  content:'✝';
+  position:absolute;bottom:16px;right:20px;
+  font-size:48px;opacity:.07;
+  pointer-events:none;
+}
+.mc-parish{
+  font-size:11px;font-weight:500;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(255,220,160,.7);
+  margin-bottom:6px;
+}
+.mc-heading{
+  font-family:var(--fd);font-size:22px;font-weight:600;
+  color:#FFE8C0;margin-bottom:18px;line-height:1.2;
+}
+.mc-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.mc-row{
+  display:flex;align-items:baseline;gap:10px;
+  padding:10px 14px;
+  background:rgba(255,255,255,.07);
+  border-radius:10px;
+  border:1px solid rgba(255,220,160,.12);
+}
+.mc-day{
+  font-size:13px;font-weight:500;color:rgba(255,220,160,.9);
+  min-width:90px;flex-shrink:0;
+}
+.mc-times{
+  font-size:14px;font-weight:400;color:#FFF8F0;
+  line-height:1.5;
+}
+.mc-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(255,220,160,.15);
+  padding-top:12px;
+  font-size:11px;color:rgba(255,220,160,.5);
+}
+.mc-logo{font-size:13px;color:rgba(255,220,160,.7);}
+/* ── action buttons below card ── */
+.mc-actions{display:flex;gap:10px;}
+.mc-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:13px;border-radius:var(--r-lg);
+  font-family:var(--fb);font-size:14px;font-weight:500;cursor:pointer;
+  border:none;min-height:48px;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .14s,transform .1s;
+}
+.mc-btn:active{transform:scale(.98);}
+.mc-btn-save{background:var(--user-bg);color:var(--user-fg);}
+.mc-btn-save:active{background:var(--user-bg-hover);}
+.mc-btn-close{background:var(--surface);color:var(--text-2);border:1px solid var(--border);}
+.mc-btn-close:active{background:var(--surface2);}
+.mc-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+
+/* ════════════════════════════════════
+   AVISOS CARD
+════════════════════════════════════ */
+.av-card{
+  background:linear-gradient(160deg,#3D2B10 0%,#1E1208 100%);
+  border-radius:20px;
+  padding:28px 24px 22px;
+  color:#FFF8F0;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  position:relative;overflow:hidden;
+}
+.av-card::before{
+  content:'';position:absolute;
+  top:-50px;right:-50px;
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,rgba(196,149,106,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.av-card::after{
+  content:'📢';
+  position:absolute;bottom:14px;right:18px;
+  font-size:44px;opacity:.07;pointer-events:none;
+}
+.av-parish{
+  font-size:11px;font-weight:500;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(255,220,160,.7);
+  margin-bottom:6px;
+}
+.av-heading{
+  font-family:var(--fd);font-size:21px;font-weight:600;
+  color:#FFE8C0;margin-bottom:16px;line-height:1.2;
+}
+.av-list{
+  display:flex;flex-direction:column;gap:9px;
+  margin-bottom:18px;
+}
+.av-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 14px;
+  background:rgba(255,255,255,.07);
+  border-radius:10px;
+  border:1px solid rgba(255,220,160,.12);
+}
+.av-bullet{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold);flex-shrink:0;margin-top:5px;
+}
+.av-text{
+  font-size:13.5px;color:#FFF8F0;line-height:1.55;
+}
+.av-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(255,220,160,.15);
+  padding-top:12px;
+  font-size:11px;color:rgba(255,220,160,.5);
+}
+.av-logo{font-size:13px;color:rgba(255,220,160,.7);}
+
 /* ── Quick action buttons ── */
 .qa-wrap{
   display:flex;flex-wrap:wrap;gap:7px;
@@ -1663,6 +1808,50 @@ textarea.fi{resize:vertical;line-height:1.7;}
   </div>
 </div>
 
+<!-- ══ MASS SCHEDULE CARD MODAL ══ -->
+<div class="mc-ov" id="mcOv" onclick="mcClose(event)">
+  <div class="mc-shell">
+    <div class="mc-card" id="mcCard">
+      <div class="mc-parish" id="mcParish"></div>
+      <div class="mc-heading">Horários das Missas</div>
+      <div class="mc-rows" id="mcRows"></div>
+      <div class="mc-footer">
+        <span class="mc-logo">✝ Secretária Paroquial</span>
+        <span id="mcDate"></span>
+      </div>
+    </div>
+    <div class="mc-actions">
+      <button class="mc-btn mc-btn-save" onclick="mcSave()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Salvar imagem
+      </button>
+      <button class="mc-btn mc-btn-close" onclick="mcClose()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AVISOS CARD MODAL ══ -->
+<div class="mc-ov" id="avOv" onclick="avClose(event)">
+  <div class="mc-shell">
+    <div class="av-card" id="avCard">
+      <div class="av-parish" id="avParish"></div>
+      <div class="av-heading">Avisos da Semana</div>
+      <div class="av-list" id="avList"></div>
+      <div class="av-footer">
+        <span class="av-logo">✝ Secretária Paroquial</span>
+        <span id="avDate"></span>
+      </div>
+    </div>
+    <div class="mc-actions">
+      <button class="mc-btn mc-btn-save" onclick="avSave()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Salvar imagem
+      </button>
+      <button class="mc-btn mc-btn-close" onclick="avClose()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">
   <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
   Configurações salvas
@@ -1866,6 +2055,12 @@ function updateModelDesc(){
 /* ════════════════════════════════════
    HELPERS
 ════════════════════════════════════ */
+// returns the registered text for a given category id, from the live cats array
+function getCatText(id){
+  const cat = cats.find(c => c.id === id);
+  return cat ? cat.text.trim() : '';
+}
+
 function updateTitle(){
   const n = ls('pq_name');
   document.title = n ? n + ' — Secretária Paroquial 24h' : 'Secretária Paroquial 24h';
@@ -2543,6 +2738,31 @@ function detectActions(text){
   const actions = [];
   const lower = text.toLowerCase();
 
+  // Avisos da semana — card visual
+  const avisoTopics = ['aviso','avisos','comunicado','informe','atenção','atenção','semana','esta semana'];
+  const isAviso = avisoTopics.some(k => lower.includes(k));
+  if(isAviso){
+    actions.push({
+      icon:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
+      label: 'Ver card de avisos',
+      type:  'avisocard',
+      value: text,
+    });
+  }
+
+  // Horários de missa — card visual
+  const massTopics = ['missa','missas','celebração','celebracao','eucaristia','horário','horario','domingo','sábado','sabado'];
+  const massHints  = ['hora','h00','h30','h15','h45',':00',':30'];
+  const isMass = massTopics.some(k => lower.includes(k)) && massHints.some(k => lower.includes(k));
+  if(isMass){
+    actions.push({
+      icon:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+      label: 'Ver card de horários',
+      type:  'masscard',
+      value: text,
+    });
+  }
+
   // PIX / dízimo / contribuição / doação / oferta
   const pixTopics = ['pix','dízimo','dizimo','contribui','doação','doacao','oferta','pagamento'];
   if(pixTopics.some(k => lower.includes(k))){
@@ -2597,15 +2817,242 @@ function detectActions(text){
 function renderActions(actions){
   if(!actions.length) return '';
   const btns = actions.map(a => {
-    const data = a.type === 'copy'
-      ? `onclick="qaAction('copy','${a.value.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${(a.toast||'Copiado!').replace(/'/g,"\\'")}')" `
-      : a.type === 'tel'
-      ? `onclick="qaAction('tel','${a.value}')" `
-      : `onclick="qaAction('url','${a.value.replace(/'/g,"\\'")}')" `;
-    return `<button class="qa-btn" ${data}>${a.icon}<span>${a.label}</span></button>`;
+    let onclick;
+    if(a.type === 'copy'){
+      onclick = `qaAction('copy','${a.value.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${(a.toast||'Copiado!').replace(/'/g,"\\'")}')`;
+    } else if(a.type === 'tel'){
+      onclick = `qaAction('tel','${a.value}')`;
+    } else if(a.type === 'masscard'){
+      // store text in a data attr to avoid quoting hell
+      const id = 'mc_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+      window[id] = a.value;
+      onclick = `showMassCard('${id}')`;
+    } else if(a.type === 'avisocard'){
+      const id = 'av_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+      window[id] = a.value;
+      onclick = `showAvisoCard('${id}')`;
+    } else {
+      onclick = `qaAction('url','${a.value.replace(/'/g,"\\'")}')`;
+    }
+    return `<button class="qa-btn" onclick="${onclick}">${a.icon}<span>${a.label}</span></button>`;
   }).join('');
   return `<div class="qa-wrap">${btns}</div>`;
 }
+
+/* ════════════════════════════════════
+   MASS SCHEDULE CARD
+════════════════════════════════════ */
+function parseMassSchedule(text){
+  // strip markdown and HTML
+  const clean = text.replace(/<[^>]+>/g,'').replace(/\*+/g,'').replace(/#+ /g,'');
+  const lines  = clean.split('\n').map(l => l.trim()).filter(Boolean);
+
+  const days = {
+    'domingo':        'Domingo',
+    'sábado':         'Sábado',
+    'sabado':         'Sábado',
+    'segunda':        'Segunda-feira',
+    'segunda-feira':  'Segunda-feira',
+    'terça':          'Terça-feira',
+    'terca':          'Terça-feira',
+    'terça-feira':    'Terça-feira',
+    'quarta':         'Quarta-feira',
+    'quarta-feira':   'Quarta-feira',
+    'quinta':         'Quinta-feira',
+    'quinta-feira':   'Quinta-feira',
+    'sexta':          'Sexta-feira',
+    'sexta-feira':    'Sexta-feira',
+    'dias de semana': 'Dias de semana',
+    'segunda a sexta':'Seg a Sex',
+    'seg a sex':      'Seg a Sex',
+    'diariamente':    'Diariamente',
+    'todo dia':       'Diariamente',
+    'feriados':       'Feriados',
+    'véspera':        'Véspera',
+    'vespera':        'Véspera',
+  };
+
+  const TIME_RE = /\d{1,2}[h:]\d{0,2}(?:\s*(?:h|hs|hrs|horas?))?/gi;
+  const results = [];
+  const seen    = new Set();
+
+  lines.forEach(line => {
+    const lower = line.toLowerCase();
+    // find which day label this line belongs to
+    let dayLabel = null;
+    let bestLen  = 0;
+    Object.keys(days).forEach(key => {
+      if(lower.includes(key) && key.length > bestLen){
+        dayLabel = days[key];
+        bestLen  = key.length;
+      }
+    });
+    if(!dayLabel) return;
+
+    const times = line.match(TIME_RE);
+    if(!times || times.length === 0) return;
+
+    // normalise times: "8h" → "8h", "18:00" → "18h"
+    const normalised = times.map(t =>
+      t.replace(/[:\s]/g,'').replace(/hs?$|horas?$/i,'h').replace(/^(\d+)h(\d+)$/,(_, h, m) => m === '00' ? h+'h' : h+'h'+m)
+    );
+
+    const key = dayLabel + normalised.join('');
+    if(seen.has(key)) return;
+    seen.add(key);
+    results.push({ day: dayLabel, times: normalised.join('  ·  ') });
+  });
+
+  return results;
+}
+
+function showMassCard(id){
+  // source of truth: the actual registered content, not the AI reply
+  const catText = getCatText('missas') || getCatText('eucaristia') || window[id] || '';
+  const rows  = parseMassSchedule(catText);
+  const name  = ls('pq_name') || 'Paróquia';
+  const today = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+
+  $('mcParish').textContent = name;
+  $('mcDate').textContent   = today;
+
+  const container = $('mcRows');
+  if(rows.length === 0){
+    container.innerHTML = '<div style="color:rgba(255,220,160,.6);font-size:13px;line-height:1.6;">Consulte a secretaria para conferir os horários atualizados.</div>';
+  } else {
+    container.innerHTML = rows.map(r => `
+      <div class="mc-row">
+        <span class="mc-day">${r.day}</span>
+        <span class="mc-times">${r.times}</span>
+      </div>`).join('');
+  }
+
+  $('mcOv').classList.add('show');
+}
+
+function mcClose(e){
+  if(e && e.target !== $('mcOv')) return;
+  $('mcOv').classList.remove('show');
+}
+
+function mcSave(){
+  const card = $('mcCard');
+  // load html2canvas on demand
+  if(typeof html2canvas === 'undefined'){
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = () => _doMcSave(card);
+    s.onerror = () => showToast('Não foi possível carregar o módulo de imagem.');
+    document.head.appendChild(s);
+  } else {
+    _doMcSave(card);
+  }
+}
+
+function _doMcSave(card){
+  showToast('Gerando imagem…');
+  html2canvas(card, {
+    scale:       2,
+    useCORS:     true,
+    backgroundColor: null,
+    logging:     false,
+  }).then(canvas => {
+    const name = (ls('pq_name') || 'horarios-missa').toLowerCase()
+      .replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+    const link = document.createElement('a');
+    link.download = name + '-missas.png';
+    link.href     = canvas.toDataURL('image/png');
+    link.click();
+    showToast('Imagem salva!');
+  }).catch(() => {
+    showToast('Erro ao gerar imagem. Tente um print manual.');
+  });
+}
+
+/* ════════════════════════════════════
+   AVISOS CARD
+════════════════════════════════════ */
+function parseAvisos(text){
+  // strip markdown/HTML tags
+  const clean = text.replace(/<[^>]+>/g,'').replace(/\*+/g,'').replace(/#+ /g,'');
+  const lines  = clean.split('\n').map(l => l.trim()).filter(Boolean);
+
+  const items = [];
+  // collect lines that look like individual notices:
+  // - start with "-", "•", "·", number+dot, or are standalone sentences
+  lines.forEach(line => {
+    // skip very short lines (headers) or lines that are just the word "avisos"
+    if(line.length < 8) return;
+    const lower = line.toLowerCase();
+    if(lower === 'avisos' || lower === 'avisos da semana' || lower === 'comunicados') return;
+    // strip leading bullet / number / dash
+    const clean = line.replace(/^[\-\•\·\*\d]+[.):\s]+/, '').trim();
+    if(clean.length > 4) items.push(clean);
+  });
+
+  // deduplicate
+  return [...new Set(items)].slice(0, 8); // max 8 items on the card
+}
+
+function showAvisoCard(id){
+  // source of truth: the actual registered content, not the AI reply
+  const catText = getCatText('avisos') || window[id] || '';
+  const items = parseAvisos(catText);
+  const name  = ls('pq_name') || 'Paróquia';
+  const today = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+
+  $('avParish').textContent = name;
+  $('avDate').textContent   = today;
+
+  const list = $('avList');
+  if(items.length === 0){
+    list.innerHTML = '<div style="color:rgba(180,200,255,.6);font-size:13px;line-height:1.6;">Consulte a secretaria para os avisos mais recentes.</div>';
+  } else {
+    list.innerHTML = items.map(item => `
+      <div class="av-item">
+        <div class="av-bullet"></div>
+        <div class="av-text">${item}</div>
+      </div>`).join('');
+  }
+
+  $('avOv').classList.add('show');
+}
+
+function avClose(e){
+  if(e && e.target !== $('avOv')) return;
+  $('avOv').classList.remove('show');
+}
+
+function avSave(){
+  const card = $('avCard');
+  if(typeof html2canvas === 'undefined'){
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = () => _doAvSave(card);
+    s.onerror = () => showToast('Não foi possível carregar o módulo de imagem.');
+    document.head.appendChild(s);
+  } else {
+    _doAvSave(card);
+  }
+}
+
+function _doAvSave(card){
+  showToast('Gerando imagem…');
+  html2canvas(card, {
+    scale: 2, useCORS: true, backgroundColor: null, logging: false,
+  }).then(canvas => {
+    const name = (ls('pq_name') || 'avisos').toLowerCase()
+      .replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+    const link = document.createElement('a');
+    link.download = name + '-avisos.png';
+    link.href     = canvas.toDataURL('image/png');
+    link.click();
+    showToast('Imagem salva!');
+  }).catch(() => {
+    showToast('Erro ao gerar imagem. Tente um print manual.');
+  });
+}
+
 
 function qaAction(type, value, toast){
   if(type === 'copy'){
@@ -2627,7 +3074,7 @@ function qaAction(type, value, toast){
   }
 }
 
-function addMsg(text, isUser){
+function addMsg(text, isUser, fullText){
   const es=$('es'); if(es) es.remove();
   const msgs=$('msgs');
   const sn = isUser ? 'Você' : (ls('pq_name')||'Assistente');
@@ -2636,7 +3083,10 @@ function addMsg(text, isUser){
   const bubbleContent = isUser
     ? parseLinks(text)
     : (typeof marked !== 'undefined' ? marked.parse(parseLinks(text)) : parseLinks(text));
-  const actions = (!isUser) ? detectActions(bubbleContent + ' ' + text) : [];
+  // fullText===null means "no actions" (intermediate block)
+  // fullText===undefined means normal single message (detect from text itself)
+  const detectText = isUser ? null : (fullText === null ? null : (fullText || bubbleContent + ' ' + text));
+  const actions = detectText ? detectActions(detectText) : [];
   const actionsHtml = renderActions(actions);
   g.innerHTML = `
     <div class="mm">
@@ -2672,17 +3122,21 @@ function addMsgTypewriter(text){
     return Math.min(Math.max(words * 50, 800), 2200);
   }
 
-  // send blocks one by one, with typing indicator between each
+  // send blocks one by one — actions only on the LAST block (uses full text)
+  const lastIdx = blocks.length - 1;
   let chain = Promise.resolve();
   blocks.forEach((block, idx) => {
     chain = chain.then(() => new Promise(resolve => {
-      // show typing dots before each block (except the first which follows
-      // the existing typing indicator from doSend)
       if(idx > 0){ showTyping(); }
-
       setTimeout(() => {
         hideTyping();
-        addMsg(block, false);
+        // last block: pass full original text so detectActions sees everything
+        // and only fires once
+        if(idx === lastIdx){
+          addMsg(block, false, text);
+        } else {
+          addMsg(block, false, null); // no actions on intermediate blocks
+        }
         resolve();
       }, idx === 0 ? 0 : delay(block));
     }));
